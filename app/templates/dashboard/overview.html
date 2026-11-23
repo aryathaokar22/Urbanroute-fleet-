@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Command Center | UrbanRoute Fleet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+
+<body class="dashboard-body">
+
+<div class="dashboard-layout">
+
+    <aside class="sidebar">
+        <a href="/" class="brand sidebar-brand">
+            <span class="brand-icon">U</span>
+            URBANROUTE <span>FLEET</span>
+        </a>
+
+        <p class="sidebar-label">WORKSPACE</p>
+        <a href="/dashboard" class="sidebar-link active">▦ Overview</a>
+        <a href="/dashboard/vehicles" class="sidebar-link">▣ Vehicles</a>
+        <a href="/dashboard/chargers" class="sidebar-link">ϟ Charging Stations</a>
+        <a href="/dashboard/assignments" class="sidebar-link">◎ Assignments</a>
+
+        <p class="sidebar-label">INTELLIGENCE</p>
+        <a href="#energy" class="sidebar-link">ϟ Energy Calculator</a>
+        <a href="#resilience" class="sidebar-link">◇ Resilience OS</a>
+
+        <div class="sidebar-bottom">
+            <span class="status-dot"></span>
+            Demo Environment
+            <a href="/">← Back to Website</a>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+            <div>
+                <span class="eyebrow">URBANROUTE / OPERATIONS</span>
+                <h1>Fleet Command Center</h1>
+                <p>Monitor your electric fleet and operational resources.</p>
+            </div>
+
+            <div class="header-status">
+                <span class="status-dot"></span>
+                SYSTEM ONLINE
+            </div>
+        </header>
+
+        <section class="dashboard-notice">
+            <strong>DEMO ENVIRONMENT</strong>
+            <span>Displaying sample fleet data for demonstration purposes.</span>
+        </section>
+
+        <section class="metrics-grid">
+            <article class="metric-card">
+                <span>Total Vehicles</span>
+                <h2>{{ vehicles|length }}</h2>
+                <small>Registered fleet vehicles</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Charging Stations</span>
+                <h2>{{ chargers|length }}</h2>
+                <small>Registered charging points</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Assignments</span>
+                <h2>{{ assignments|length }}</h2>
+                <small>Recorded fleet assignments</small>
+            </article>
+
+            <article class="metric-card">
+                <span>Available Vehicles</span>
+                <h2>{{ vehicles|selectattr('status', 'equalto', 'Available')|list|length }}</h2>
+                <small>Currently marked available</small>
+            </article>
+        </section>
+
+        <section class="dashboard-grid">
+
+            <div class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">FLEET MANAGEMENT</span>
+                        <h2>Vehicle Overview</h2>
+                    </div>
+                    <a href="/dashboard/vehicles">View All →</a>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Model</th>
+                                <th>Battery</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                            <tr>
+                                <td><strong>{{ vehicle.name }}</strong></td>
+                                <td>{{ vehicle.model }}</td>
+                                <td>
+                                    <div class="battery-cell">
+                                        <div class="battery-track">
+                                            <div class="battery-fill"
+                                                 style="width: {{ vehicle.battery_level }}%">
+                                            </div>
+                                        </div>
+                                        {{ vehicle.battery_level }}%
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-pill">{{ vehicle.status }}</span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">No vehicles registered yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">INFRASTRUCTURE</span>
+                        <h2>Charging Stations</h2>
+                    </div>
+                    <a href="/dashboard/chargers">View All →</a>
+                </div>
+
+                <div class="resource-list">
+                    {% for charger in chargers %}
+                    <div class="resource-item">
+                        <div>
+                            <strong>{{ charger.name }}</strong>
+                            <p>{{ charger.location }} · {{ charger.power }} kW</p>
+                        </div>
+                        <span class="status-pill">{{ charger.status }}</span>
+                    </div>
+                    {% else %}
+                    <p>No charging stations registered yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </section>
+
+        <section class="dashboard-panel assignment-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">OPERATIONS</span>
+                    <h2>Active Assignments</h2>
+                </div>
+                <a href="/dashboard/assignments">View All →</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Assignment</th>
+                            <th>Vehicle ID</th>
+                            <th>Destination</th>
+                            <th>Energy Required</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr>
+                            <td><strong>{{ assignment.title }}</strong></td>
+                            <td>{{ assignment.vehicle_id }}</td>
+                            <td>{{ assignment.destination }}</td>
+                            <td>{{ assignment.energy_required }} kWh</td>
+                            <td>{{ assignment.deadline }}</td>
+                            <td><span class="status-pill">{{ assignment.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No assignments recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-grid tools-grid" id="energy">
+
+            <div class="dashboard-panel calculator-panel">
+                <span class="eyebrow">ENERGY INTELLIGENCE</span>
+                <h2>Energy Calculator</h2>
+                <p>Calculate the energy required for a journey.</p>
+
+                <form id="energyForm">
+                    <label for="distance">Journey Distance (km)</label>
+                    <input type="number" id="distance" value="100" min="0.1" step="any" required>
+
+                    <label for="consumption">Consumption (kWh/100 km)</label>
+                    <input type="number" id="consumption" value="20" min="0.1" step="any" required>
+
+                    <button type="submit" class="action-button">Calculate Energy</button>
+                </form>
+
+                <div id="energyResult" class="result-box">
+                    Your calculation will appear here.
+                </div>
+            </div>
+
+            <div class="dashboard-panel calculator-panel">
+                <span class="eyebrow">RANGE INTELLIGENCE</span>
+                <h2>Vehicle Range Estimator</h2>
+                <p>Estimate the driving range using battery capacity.</p>
+
+                <form id="rangeForm">
+                    <label for="battery">Battery Capacity (kWh)</label>
+                    <input type="number" id="battery" value="75" min="0.1" step="any" required>
+
+                    <label for="level">Battery Level (%)</label>
+                    <input type="number" id="level" value="80" min="0" max="100" step="any" required>
+
+                    <label for="rangeConsumption">Consumption (kWh/100 km)</label>
+                    <input type="number" id="rangeConsumption" value="20" min="0.1" step="any" required>
+
+                    <button type="submit" class="action-button">Estimate Range</button>
+                </form>
+
+                <div id="rangeResult" class="result-box">
+                    Your range estimate will appear here.
+                </div>
+            </div>
+
+        </section>
+
+        <section class="dashboard-panel resilience-panel" id="resilience">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">URBANROUTE RESILIENCE OS</span>
+                    <h2>Disruption Recovery Simulator</h2>
+                    <p>Simulate a fleet disruption and identify an eligible replacement.</p>
+                </div>
+                <span class="innovation-tag">INNOVATION DEMO</span>
+            </div>
+
+            <form id="disruptionForm" class="disruption-form">
+                <div>
+                    <label for="disruptionType">Disruption Type</label>
+                    <select id="disruptionType">
+                        <option value="Vehicle Breakdown">Vehicle Breakdown</option>
+                        <option value="Battery Failure">Battery Failure</option>
+                        <option value="Charging Station Failure">Charging Station Failure</option>
+                        <option value="Operational Delay">Operational Delay</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="targetVehicle">Affected Vehicle</label>
+                    <select id="targetVehicle">
+                        {% for vehicle in vehicles %}
+                        <option value="{{ vehicle.name }}">{{ vehicle.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="action-button">Simulate Disruption</button>
+            </form>
+
+            <div id="disruptionResult" class="result-box">
+                Recovery simulation results will appear here.
+            </div>
+
+            <p class="disclaimer">
+                Demonstration using simplified vehicle eligibility rules.
+                This is not a production dispatch or globally optimal recovery engine.
+            </p>
+        </section>
+
+        <footer class="dashboard-footer">
+            URBANROUTE FLEET · INTELLIGENT ELECTRIC MOBILITY OPERATIONS
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>

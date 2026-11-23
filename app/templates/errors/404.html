@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | UrbanRoute Fleet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="error-page">
+
+    <main class="error-container">
+        <span class="eyebrow">URBANROUTE FLEET</span>
+
+        <h1>404</h1>
+
+        <h2>Looks like this route doesn't exist.</h2>
+
+        <p>
+            The page you're looking for may have moved,
+            or the address may be incorrect.
+        </p>
+
+        <a href="/dashboard" class="primary-button">
+            Return to Dashboard →
+        </a>
+
+        <a href="/" class="error-home-link">
+            Back to Homepage
+        </a>
+    </main>
+
+</body>
+</html>
