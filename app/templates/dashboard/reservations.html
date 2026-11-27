@@ -1,0 +1,144 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}ChargeReserve{% endblock %}
+{% block heading %}Charging reservations{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reservations.css') }}">
+<script defer src="{{ url_for('static', filename='js/reservations.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="reservation-intro">
+  <div>
+    <span class="reservation-kicker">CHARGING OPERATIONS / CHARGERESERVE</span>
+    <h2>Plan every charging stop.</h2>
+    <p>Reserve compatible charging ports, coordinate vehicle availability and manage the waiting list.</p>
+  </div>
+  <div class="reservation-status"><span></span> DATABASE CONNECTED · DEMO</div>
+</section>
+
+<section class="reservation-metrics">
+  <article><span>ACTIVE RESERVATIONS</span><strong id="activeCount">—</strong><small>Confirmed and in progress</small></article>
+  <article><span>AVAILABLE PORTS</span><strong id="availablePorts">—</strong><small>Currently operational</small></article>
+  <article><span>WAITING VEHICLES</span><strong id="waitingCount">—</strong><small>Priority ordered by battery level</small></article>
+</section>
+
+<div class="reservation-layout">
+  <section class="reservation-panel">
+    <div class="reservation-panel-head">
+      <div><span class="reservation-kicker">NEW BOOKING</span><h3>Reserve a charging slot</h3></div>
+      <span class="reservation-number">01 / BOOK</span>
+    </div>
+
+    <form id="reservationForm" class="reservation-form">
+      <label>Vehicle
+        <select id="vehicleId" required>
+          <option value="">Choose a vehicle</option>
+          {% for vehicle in vehicles %}
+          <option value="{{ vehicle.id }}" data-connector="{{ vehicle.connector_type }}">
+            {{ vehicle.name }} · {{ vehicle.model }} · {{ vehicle.soc }}% battery
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>Charging port
+        <select id="portId" required>
+          <option value="">Loading compatible ports…</option>
+        </select>
+        <small id="connectorHint">Select a vehicle to check connector compatibility.</small>
+      </label>
+
+      <div class="reservation-two-col">
+        <label>Start date and time
+          <input id="startAt" type="datetime-local" required>
+        </label>
+        <label>End date and time
+          <input id="endAt" type="datetime-local" required>
+        </label>
+      </div>
+
+      <div class="reservation-two-col">
+        <label>Energy target (kWh)
+          <input id="energyTarget" type="number" min="0" step="0.1" value="20" required>
+        </label>
+        <label>Estimated cost (₹)
+          <input id="estimatedCost" type="number" min="0" step="0.01" value="0">
+        </label>
+      </div>
+
+      <label>Booking note <span class="optional-label">OPTIONAL</span>
+        <textarea id="bookingNotes" rows="2" maxlength="500" placeholder="Add an operational note…"></textarea>
+      </label>
+
+      <div class="reservation-estimate" id="capacityEstimate">
+        Select a charging port and time window to see estimated charging capacity.
+      </div>
+
+      <button class="reservation-submit" type="submit" id="reserveButton">Confirm reservation <span>↗</span></button>
+      <p class="reservation-message" id="bookingMessage" role="status"></p>
+    </form>
+  </section>
+
+  <section class="reservation-panel port-panel">
+    <div class="reservation-panel-head">
+      <div><span class="reservation-kicker">NETWORK STATUS</span><h3>Charging port inventory</h3></div>
+      <span class="reservation-number">02 / PORTS</span>
+    </div>
+    <div id="portInventory" class="port-inventory">
+      <p class="reservation-empty">Loading charging ports…</p>
+    </div>
+    <div class="reservation-footnote">Port status reflects the demonstration database. Availability for a specific time is checked when a reservation is submitted.</div>
+  </section>
+</div>
+
+<section class="reservation-panel history-panel">
+  <div class="reservation-panel-head">
+    <div><span class="reservation-kicker">BOOKING MANAGEMENT</span><h3>Reservation history</h3></div>
+    <button type="button" class="reservation-refresh" id="refreshReservations">↻ Refresh</button>
+  </div>
+  <div class="reservation-table-wrap">
+    <table class="reservation-table">
+      <thead><tr><th>VEHICLE</th><th>CHARGING STATION</th><th>PORT</th><th>START</th><th>END</th><th>ENERGY</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
+      <tbody id="reservationRows"><tr><td colspan="8" class="reservation-empty">Loading reservations…</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<div class="reservation-layout lower-reservation-layout">
+  <section class="reservation-panel">
+    <div class="reservation-panel-head">
+      <div><span class="reservation-kicker">QUEUE MANAGEMENT</span><h3>Join the charging queue</h3></div>
+      <span class="reservation-number">03 / QUEUE</span>
+    </div>
+    <form id="waitlistForm" class="reservation-form">
+      <label>Vehicle
+        <select id="waitVehicleId" required>
+          <option value="">Choose a vehicle</option>
+          {% for vehicle in vehicles %}
+          <option value="{{ vehicle.id }}">{{ vehicle.name }} · {{ vehicle.soc }}% battery</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Preferred charging station
+        <select id="waitChargerId" required><option value="">Loading stations…</option></select>
+      </label>
+      <label>Requested energy (kWh)
+        <input id="waitEnergy" type="number" min="0" step="0.1" value="20" required>
+      </label>
+      <button class="reservation-submit" type="submit">Join waiting list <span>↗</span></button>
+      <p class="reservation-message" id="waitlistMessage" role="status"></p>
+    </form>
+  </section>
+
+  <section class="reservation-panel">
+    <div class="reservation-panel-head">
+      <div><span class="reservation-kicker">PRIORITY QUEUE</span><h3>Waiting vehicles</h3></div>
+      <span class="reservation-number">04 / PRIORITY</span>
+    </div>
+    <div id="waitlistRows" class="waitlist-rows"><p class="reservation-empty">Loading waiting list…</p></div>
+    <div class="reservation-footnote">Demonstration priority score: vehicles with lower state of charge receive higher priority. Queue entries are persisted; automatic dispatch is not enabled.</div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}UrbanRoute Fleet | Intelligent EV Operations{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">INTELLIGENCE FOR ELECTRIC FLEETS</span>
+    <h1>When the plan changes, <em>your fleet adapts.</em></h1>
+    <p>Connect vehicles, charging, assignments and operational decisions through one intelligent fleet operations platform.</p>
+    <div class="actions"><a class="btn primary" href="{{ url_for('dashboard') }}">Explore fleet console ↗</a><a class="btn secondary" href="{{ url_for('innovation') }}">Discover our vision</a></div>
+    <div class="micro-note">A new approach to coordinated electric fleet operations.</div>
+  </div>
+  <div class="hero-art hero-car">
+    <img class="hero-car-image" src="{{ url_for('static', filename='images/urbanroute-hero.jpg') }}" alt="Luxury electric sedan on a city road">
+    <div class="hero-car-shade"></div>
+    <div class="hero-car-label">URBANROUTE / ELECTRIC FLEET INTELLIGENCE</div>
+  </div>
+</section>
+<section class="ticker"><span>FLEET VISIBILITY</span><span>ENERGY INTELLIGENCE</span><span>CHARGING COORDINATION</span><span>OPERATIONAL RESILIENCE</span></section>
+<section class="section">
+  <div class="section-intro"><span class="eyebrow">THE OPERATIONAL CHALLENGE</span><h2>Electric fleets need more than vehicle tracking.</h2><p>Vehicles, assignments, chargers, energy and deadlines are connected. A change in one place can affect the entire operation.</p></div>
+  <div class="feature-grid">
+    <article class="feature"><span class="feature-icon">⌖</span><h3>Fleet visibility</h3><p>Bring vehicle and operational information into a unified view.</p></article>
+    <article class="feature"><span class="feature-icon">ϟ</span><h3>Energy intelligence</h3><p>Estimate energy requirements and understand charging needs.</p></article>
+    <article class="feature"><span class="feature-icon">⟳</span><h3>Operational resilience</h3><p>Evaluate coordinated alternatives when the original plan is disrupted.</p></article>
+  </div>
+</section>
+<section class="dark-band"><div><span class="eyebrow">OUR DIRECTION</span><h2>From managing vehicles to coordinating an entire fleet.</h2><p>UrbanRoute Fleet is exploring how a fleet can understand dependencies, evaluate disruption and recover while protecting important operational commitments.</p><a class="text-link" href="{{ url_for('innovation') }}">Explore the Resilience OS direction →</a></div><div class="network"><span>VEHICLES</span><span>ASSIGNMENTS</span><strong>FLEET<br>INTELLIGENCE</strong><span>CHARGING</span><span>ROUTES</span></div></section>
+<section class="cta"><span class="eyebrow">THE NEXT GENERATION OF MOBILITY</span><h2>Build a fleet that can think beyond the original plan.</h2><p>Explore the UrbanRoute Fleet platform and its research direction.</p><a class="btn primary" href="{{ url_for('dashboard') }}">Open fleet console ↗</a></section>
+{% endblock %}

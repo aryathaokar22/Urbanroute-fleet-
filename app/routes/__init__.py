@@ -1,154 +1,196 @@
+import math
 
-from flask import render_template, request, jsonify
-from app.database import get_db
+from flask import (
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    jsonify,
+)
+
+from app.db import get_db
+from app.services.core import (
+    fleet_summary,
+    energy_estimate,
+    remaining_range,
+    simulate_recovery,
+)
 
 
 def register_routes(app):
 
     @app.route("/")
     def home():
-        return render_template("index.html")
+        return render_template("public/index.html")
+
+    @app.route("/solutions")
+    def solutions():
+        return render_template("public/solutions.html")
+
+    @app.route("/platform")
+    def platform():
+        return render_template("public/platform.html")
+
+    @app.route("/innovation")
+    def innovation():
+        return render_template("public/innovation.html")
+
+    @app.route("/about")
+    def about():
+        return render_template("public/about.html")
+
+    @app.route("/contact", methods=["GET", "POST"])
+    def contact():
+        if request.method == "POST":
+            flash(
+                "Thanks. This demo form is not connected to email delivery.",
+                "success",
+            )
+            return redirect(url_for("contact"))
+
+        return render_template("public/contact.html")
 
     @app.route("/dashboard")
     def dashboard():
-        db = get_db()
-
-        vehicles = db.execute(
-            "SELECT * FROM vehicles"
-        ).fetchall()
-
-        chargers = db.execute(
-            "SELECT * FROM chargers"
-        ).fetchall()
-
-        assignments = db.execute(
-            "SELECT * FROM assignments"
-        ).fetchall()
-
         return render_template(
             "dashboard/overview.html",
-            vehicles=vehicles,
-            chargers=chargers,
-            assignments=assignments
+            data=fleet_summary(),
         )
 
     @app.route("/dashboard/vehicles")
-    def vehicle_page():
-        db = get_db()
-        vehicles = db.execute(
-            "SELECT * FROM vehicles"
-        ).fetchall()
-
+    def vehicles():
         return render_template(
             "dashboard/vehicles.html",
-            vehicles=vehicles
+            data=fleet_summary(),
         )
 
     @app.route("/dashboard/chargers")
-    def charger_page():
-        db = get_db()
-        chargers = db.execute(
-            "SELECT * FROM chargers"
-        ).fetchall()
-
+    def chargers():
         return render_template(
             "dashboard/chargers.html",
-            chargers=chargers
+            data=fleet_summary(),
         )
 
     @app.route("/dashboard/assignments")
-    def assignment_page():
-        db = get_db()
-        assignments = db.execute(
-            "SELECT * FROM assignments"
+    def assignments():
+        return render_template(
+            "dashboard/assignments.html",
+            data=fleet_summary(),
+        )
+
+    @app.route("/dashboard/resilience")
+    def resilience():
+        rows = get_db().execute(
+            "SELECT * FROM disruptions ORDER BY id DESC"
         ).fetchall()
 
         return render_template(
-            "dashboard/assignments.html",
-            assignments=assignments
+            "dashboard/resilience.html",
+            disruptions=rows,
         )
 
     @app.route("/api/energy", methods=["GET", "POST"])
-    def energy():
-        data = request.get_json(silent=True) or request.values
+    def api_energy():
+        payload = request.get_json(silent=True) or request.args
 
         try:
-            distance = float(data.get("distance", 100))
-            consumption = float(data.get("consumption", 20))
-
-            if distance < 0 or consumption <= 0:
-                raise ValueError
-
-        except (ValueError, TypeError):
-            return jsonify({"error": "Invalid input"}), 400
-
-        return jsonify({
-            "distance_km": distance,
-            "energy_required_kwh": round(
-                distance * consumption / 100, 2
+            distance = float(
+                payload.get("distance_km", payload.get("distance", 100))
             )
-        })
-
-    @app.route("/api/range", methods=["GET", "POST"])
-    def range_calculation():
-        data = request.get_json(silent=True) or request.values
-
-        try:
-            battery = float(data.get("battery", 75))
-            level = float(data.get("level", 50))
-            consumption = float(data.get("consumption", 20))
+            consumption = float(payload.get("consumption", 20))
 
             if (
-                battery <= 0
+                not math.isfinite(distance)
+                or not math.isfinite(consumption)
+                or distance < 0
                 or consumption <= 0
-                or not 0 <= level <= 100
             ):
                 raise ValueError
 
-        except (ValueError, TypeError):
-            return jsonify({"error": "Invalid input"}), 400
-
-        available_energy = battery * level / 100
-        estimated_range = available_energy / consumption * 100
-
-        return jsonify({
-            "estimated_range_km": round(estimated_range, 2)
-        })
-
-    @app.route("/api/disruption", methods=["POST"])
-    def disruption():
-        data = request.get_json(silent=True) or {}
-
-        kind = data.get("type", "Vehicle Breakdown")
-        target = data.get("target", "UR-001")
-
-        db = get_db()
-
-        db.execute(
-            "INSERT INTO disruptions (type, target) VALUES (?, ?)",
-            (kind, target)
-        )
-        db.commit()
-
-        candidates = db.execute("""
-            SELECT * FROM vehicles
-            WHERE status = 'Available'
-              AND battery_level >= 35
-              AND name != ?
-            ORDER BY battery_level DESC
-        """, (target,)).fetchall()
-
-        if candidates:
-            selected = candidates[0]
+            result = round(
+                energy_estimate(distance, consumption), 2
+            )
 
             return jsonify({
-                "status": "Recovery Candidate Found",
-                "vehicle": selected["name"],
-                "battery": selected["battery_level"],
-                "message": "Eligible replacement identified using demo rules."
+                "distance_km": distance,
+                "energy_kwh": result,
+                "energy_required_kwh": result,
             })
 
-        return jsonify({
-            "status": "No Feasible Candidate",
-            "message": "Human intervention is required."
-        })
+        except (TypeError, ValueError, OverflowError):
+            return jsonify({
+                "error": (
+                    "Provide a non-negative distance and "
+                    "positive consumption."
+                )
+            }), 400
+
+    @app.route("/api/range", methods=["GET", "POST"])
+    def api_range():
+        payload = request.get_json(silent=True) or request.args
+
+        try:
+            battery = float(
+                payload.get("battery_kwh", payload.get("battery", 75))
+            )
+            soc = float(
+                payload.get("soc", payload.get("level", 50))
+            )
+            consumption = float(payload.get("consumption", 20))
+
+            if (
+                not all(math.isfinite(value) for value in (
+                    battery, soc, consumption
+                ))
+                or battery <= 0
+                or not 0 <= soc <= 100
+                or consumption <= 0
+            ):
+                raise ValueError
+
+            result = round(
+                remaining_range(battery, soc, consumption), 2
+            )
+
+            return jsonify({
+                "estimated_range_km": result,
+            })
+
+        except (TypeError, ValueError, OverflowError):
+            return jsonify({
+                "error": (
+                    "Check battery capacity, SoC (0-100), "
+                    "and positive consumption."
+                )
+            }), 400
+
+    @app.route("/api/disruptions", methods=["GET", "POST"])
+    def api_disruptions():
+        if request.method == "GET":
+            rows = get_db().execute(
+                "SELECT * FROM disruptions ORDER BY id DESC"
+            ).fetchall()
+
+            return jsonify([dict(row) for row in rows])
+
+        payload = request.get_json(silent=True) or {}
+
+        kind = str(
+            payload.get("kind", "Vehicle unavailable")
+        ).strip()[:80]
+
+        target = str(
+            payload.get("target", "UR-001")
+        ).strip()[:80]
+
+        if not kind or not target:
+            return jsonify({
+                "error": "Disruption kind and target are required."
+            }), 400
+
+        return jsonify(simulate_recovery(kind, target))
+
+    @app.errorhandler(404)
+    def not_found(_error):
+        return render_template("errors/404.html"), 404

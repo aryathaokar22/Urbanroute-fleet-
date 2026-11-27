@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Fleet Console{% endblock %} | UrbanRoute</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+  <script defer src="{{ url_for('static',filename='js/app.js') }}"></script>
+</head>
+<body class="dashboard-body">
+  <aside class="sidebar">
+    <a class="brand sidebar-brand" href="{{ url_for('home') }}"><span class="brand-mark">U</span> URBANROUTE</a>
+    <div class="side-label">WORKSPACE</div>
+    <a href="{{ url_for('dashboard') }}">▦ &nbsp; Overview</a>
+    <a href="{{ url_for('vehicles') }}">▣ &nbsp; Vehicles</a>
+    <a href="{{ url_for('chargers') }}">ϟ &nbsp; Charging stations</a>
+    <a href="{{ url_for('reservations') }}">◷ &nbsp; Reservations</a>
+    <a href="{{ url_for('assignments') }}">⇄ &nbsp; Assignments</a>
+    <a href="{{ url_for('resilience') }}">⟳ &nbsp; Resilience OS</a>
+    <div class="sidebar-bottom">
+      <span class="demo-tag">DEMO ENVIRONMENT</span>
+      <a href="{{ url_for('home') }}">← Public website</a>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="dash-top">
+      <div>
+        <span class="eyebrow">OPERATIONS / BENGALURU DEMO</span>
+        <h1>{% block heading %}Fleet overview{% endblock %}</h1>
+      </div>
+      <div class="operator">
+        <span class="avatar">UR</span>
+        <span>Demo operator<br><small>Fleet administrator</small></span>
+      </div>
+    </header>
+    <main class="dash-content">{% block content %}{% endblock %}</main>
+  </div>
+</body>
+</html>
