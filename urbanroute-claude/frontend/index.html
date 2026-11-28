@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UrbanRoute Fleet</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff6f4;--sf:#fff;--ink:#3b1220;--mute:#7a5560;--line:#f0d5d8;--red:#b4142f;--btn:#b4142f;--pink:#d6336c;--gold:#e0a820;--goldink:#7a5200;--ps:#fde4ec;--gs:#fbefc8;--rs:#fbdcdc;--ok:#166534;--oks:#dcf3e3;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c0d12;--sf:#2a141b;--ink:#fbeaee;--mute:#c9a3ad;--line:#4a2530;--red:#ff7b8d;--btn:#d63350;--pink:#ff8fb1;--gold:#f5c542;--goldink:#f5c542;--ps:#4a1f2c;--gs:#40320f;--rs:#4a1a1e;--ok:#6ee7a0;--oks:#143a24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c0d12;--sf:#2a141b;--ink:#fbeaee;--mute:#c9a3ad;--line:#4a2530;--red:#ff7b8d;--btn:#d63350;--pink:#ff8fb1;--gold:#f5c542;--goldink:#f5c542;--ps:#4a1f2c;--gs:#40320f;--rs:#4a1a1e;--ok:#6ee7a0;--oks:#143a24;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 Manrope,system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:20}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+nav{background:var(--sf);border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto}
+.brand{font-weight:800;font-size:18px;display:flex;gap:8px;align-items:center;padding:4px 8px 14px}
+.logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--pink) 55%,var(--red))}
+nav button.n{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px;font-weight:600;color:var(--mute)}
+nav button.n[aria-current=page]{background:var(--ps);color:var(--ink);box-shadow:inset 3px 0 var(--red)}
+.mb{display:none}
+main{padding:22px 26px;max-width:1180px;width:100%}
+h1{font-size:25px;letter-spacing:-.02em;margin:0 0 2px}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mute);margin:0 0 18px}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.role{display:flex;gap:3px;background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:3px}
+.role button{border:0;background:none;border-radius:7px;padding:6px 12px;font-weight:700;color:var(--mute)}
+.role button[aria-pressed=true]{background:var(--btn);color:#fff}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.two{display:grid;gap:14px;grid-template-columns:1fr 1fr;align-items:start}
+.cnt{font-size:28px;font-weight:800;line-height:1.1}.mute{color:var(--mute);font-size:13px}
+.bat{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0}.bat i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--pink),var(--gold))}
+.badge{display:inline-block;border-radius:20px;padding:1px 10px;font-size:12px;font-weight:700;background:var(--gs);color:var(--goldink)}
+.b-ok{background:var(--oks);color:var(--ok)}.b-bad{background:var(--rs);color:var(--red)}.b-pink{background:var(--ps);color:var(--pink)}
+.sim{font-size:12px;color:var(--goldink);background:var(--gs);border-radius:6px;padding:1px 7px;font-weight:700}
+label{display:block;font-weight:700;font-size:13px;margin:10px 0 3px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--sf)}
+.btn{border:1px solid var(--line);background:var(--sf);border-radius:8px;padding:8px 14px;font-weight:700}
+.btn.p{background:var(--btn);border-color:var(--btn);color:#fff}.btn.g{background:var(--gold);border-color:var(--gold);color:#3b1220}
+.btn:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mute);font-size:13px}
+.msg{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-weight:700}
+.msg.ok{background:var(--oks);color:var(--ok)}.msg.err{background:var(--rs);color:var(--red)}.msg.warn{background:var(--gs);color:var(--goldink)}
+.ins{border-left:5px solid var(--gold);padding:8px 12px;margin-bottom:10px;background:var(--bg);border-radius:0 8px 8px 0}.ins.r{border-color:var(--red)}.ins.k{border-color:var(--pink)}
+.empty{text-align:center;padding:22px;color:var(--mute)}
+[hidden]{display:none!important}
+.hh{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--sf);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 6vw}
+.hh nav{all:unset;display:flex;gap:18px;font-weight:600}.hh nav a{color:var(--mute);text-decoration:none}
+.sec{padding:64px 6vw}.sec.alt{background:var(--sf);border-block:1px solid var(--line)}.wrap{max-width:1100px;margin:0 auto}
+.sec h2{font-size:30px;letter-spacing:-.02em;margin:0 0 8px}.lead{color:var(--mute);max-width:60ch;margin:0 0 28px;font-size:16px}
+.hero{background:linear-gradient(160deg,#2a0a14,#5a1022 55%,#8c1c3a);color:#fff;padding:56px 6vw 0;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;align-items:center}
+.hero h1{font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px}
+.hero p{color:#f6d9df;font-size:17px;max-width:46ch;margin:0 0 26px}
+.hero svg{width:100%;height:auto;display:block;margin-bottom:-6px}
+.cta{display:inline-block;border:0;border-radius:10px;padding:13px 24px;font-weight:800;font-size:16px;background:#f5c542;color:#3b1220;text-decoration:none}
+.cta.o{background:none;color:#fff;border:1px solid #f6d9df;margin-left:8px}
+.fg{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.fg .card{margin:0;border-top:4px solid var(--gold)}.fg .card:nth-child(3n+2){border-top-color:var(--pink)}.fg .card:nth-child(3n){border-top-color:var(--red)}
+.fg h3{margin:0 0 6px;font-size:17px}.fg p{margin:0;color:var(--mute)}
+.steps{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.steps b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#3b1220;margin-bottom:8px}
+.end{background:linear-gradient(160deg,#5a1022,#8c1c3a);color:#fff;text-align:center}.end p{color:#f6d9df;margin:0 auto 24px}
+.foot{padding:20px 6vw;color:var(--mute);font-size:13px;text-align:center}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}.hh nav{display:none}.cta.o{margin:10px 0 0}}
+@media(max-width:860px){.app{grid-template-columns:1fr}nav{display:none;position:static;height:auto}nav.open{display:block}.mb{display:block;margin:10px 16px 0}.two{grid-template-columns:1fr}main{padding:16px}}
+</style>
+</head>
+<body>
+<div id="home"></div>
+<div class="app" id="app" hidden>
+<nav id="nav" aria-label="Main"></nav>
+<div><button class="btn mb" id="mb" aria-expanded="false">Menu</button><main id="m"></main></div>
+</div>
+<script>
+(function(){
+var KEYS={veh:"urbanroute_vehicles",sta:"urbanroute_stations",ses:"urbanroute_sessions",rou:"urbanroute_routes",res:"urbanroute_reservations",pas:"urbanroute_pass",txn:"urbanroute_txn",pref:"urbanroute_prefs",own:"urbanroute_owner"};
+var D={},S={t:{td:"",tk:"",tr:"One way"},od:15,cc:{cf:20,ct:80,cb:"",cp:"",ck:50},view:"dash",draft:{name:"",vid:"",stops:[]},sel:null,q:"",f:"All",editV:null,editS:null,msg:null,plan:null,sim:null,disc:{vid:"",rad:15}};
+function ld(k,d){try{var j=localStorage.getItem(KEYS[k]);return j?JSON.parse(j):d}catch(e){return d}}
+var API=null;
+function apiH(){return{"Content-Type":"application/json","X-Role":D.pref.role}}
+function push(k){if(!API||k==="pref")return;
+ fetch(API+"/api/state/"+k,{method:"PUT",headers:apiH(),body:JSON.stringify(D[k])}).then(function(r){if(!r.ok)return r.json().then(function(j){msg(j.error||"The server rejected this change.","err");pull()})}).catch(function(){})}
+function pull(){if(!API)return;
+ fetch(API+"/api/state",{headers:apiH()}).then(function(r){return r.json()}).then(function(st){for(var k in st){if(KEYS[k]&&k!=="pref"){D[k]=st[k];try{localStorage.setItem(KEYS[k],JSON.stringify(st[k]))}catch(e){}}}passes();if(!S.home)render()}).catch(function(){})}
+function connect(){var q="";try{q=new URLSearchParams(location.search).get("api")||localStorage.getItem("urbanroute_api")||""}catch(e){}
+ var c=[q,location.origin].filter(function(x){return x&&x.indexOf("http")===0}).map(function(x){return x.replace(/\/$/,"")});
+ (function t(i){if(i>=c.length)return;fetch(c[i]+"/api/health").then(function(r){return r.json()}).then(function(j){if(j&&j.app==="urbanroute"){API=c[i];pull();if(!S.home)render()}else t(i+1)}).catch(function(){t(i+1)})})(0)}
+function sv(k){push(k);try{localStorage.setItem(KEYS[k],JSON.stringify(D[k]));return true}catch(e){msg("Data could not be saved. Your work is still on screen.","err");return false}}
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function msg(t,type){S.msg={t:t,type:type||"ok"}}
+function uid(p){return p+Math.random().toString(36).slice(2,7)}
+function nowH(){var d=new Date();d.setMinutes(0,0,0);d.setHours(d.getHours()+1);return d}
+function loc(d){d=new Date(d);var z=new Date(d-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,16)}
+function fm(d){return new Date(d).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function seed(){
+ var t=nowH();
+ D.veh=[{id:"UR-101",name:"Tata Ace EV",kwh:21.3,cons:.14,pct:82,conn:"CCS2",status:"Available",lat:12.935,lng:77.614},
+ {id:"UR-102",name:"Mahindra eSupro",kwh:15,cons:.13,pct:24,conn:"CCS2",status:"Available",lat:12.97,lng:77.64},
+ {id:"UR-103",name:"Eicher Pro X",kwh:70,cons:.35,pct:55,conn:"CCS2",status:"On route",lat:12.99,lng:77.55},
+ {id:"UR-104",name:"Piaggio Ape E-Xtra",kwh:7.4,cons:.09,pct:18,conn:"Type 2",status:"Available",lat:12.91,lng:77.6},
+ {id:"UR-105",name:"Tata Ace EV 2",kwh:21.3,cons:.14,pct:91,conn:"CCS2",status:"Available",lat:12.95,lng:77.7},
+ {id:"UR-106",name:"Mahindra Treo Zor",kwh:7.4,cons:.1,pct:35,conn:"Type 2",status:"Charging",lat:12.88,lng:77.63},
+ {id:"UR-107",name:"Eicher Pro X 2",kwh:70,cons:.35,pct:12,conn:"CCS2",status:"Offline",lat:13.03,lng:77.59},
+ {id:"UR-108",name:"Tata Ace EV 3",kwh:21.3,cons:.14,pct:64,conn:"CCS2",status:"Available",lat:12.92,lng:77.67}];
+ D.sta=[{id:"ST-1",name:"Koramangala Hub",conn:"CCS2",kw:50,n:4,price:11,lat:12.934,lng:77.622},
+ {id:"ST-2",name:"Whitefield Depot",conn:"CCS2",kw:60,n:3,price:10,lat:12.969,lng:77.75},
+ {id:"ST-3",name:"Indiranagar Fast",conn:"CCS2",kw:120,n:2,price:19,lat:12.978,lng:77.64},
+ {id:"ST-4",name:"HSR Layout Point",conn:"Type 2",kw:22,n:3,price:12,lat:12.912,lng:77.64},
+ {id:"ST-5",name:"Hebbal Plaza",conn:"CCS2",kw:50,n:2,price:21,lat:13.035,lng:77.597},
+ {id:"ST-6",name:"Jayanagar Type 2",conn:"Type 2",kw:22,n:2,price:12,lat:12.925,lng:77.583}];
+ D.ses=[{id:"CS-1",vid:"UR-106",sid:"ST-4",start:t.toISOString(),target:90,mins:150,status:"Scheduled"}];
+ D.rou=[{id:"RT-1",name:"North loop deliveries",vid:"UR-105",stops:[{n:"Depot",km:0},{n:"Hebbal drop",km:24},{n:"Yelahanka drop",km:12},{n:"Return",km:30}],km:66,kwh:9.2,stop:null,status:"Planned",at:new Date().toISOString()}];
+ D.res=[{id:"RS-1",vid:"UR-101",sid:"ST-1",cn:1,start:new Date(t.getTime()+36e5).toISOString(),end:new Date(t.getTime()+72e5).toISOString(),status:"Confirmed"}];
+ D.pas={};D.txn=[];D.pref={role:"Fleet Manager",last:"dash"};
+ var dg=function(n){return new Date(Date.now()-n*864e5).toISOString()};
+ D.own={car:{name:"Tata Nexon EV",kwh:40.5,cons:.15,pct:58,conn:"CCS2",tariff:7,lat:12.935,lng:77.614},log:[{id:"L1",at:dg(12),place:"Home",kwh:18,cost:126,type:"Home"},{id:"L2",at:dg(8),place:"Koramangala Hub",kwh:22,cost:242,type:"Public"},{id:"L3",at:dg(3),place:"Home",kwh:15,cost:105,type:"Home"}]};
+ for(var k in KEYS)sv(k);
+}
+function init(){var ok=0;for(var k in KEYS){D[k]=ld(k,null);if(D[k]===null)ok=1}if(ok)seed();passes()}
+function passes(){D.veh.forEach(function(v){if(!D.pas[v.id])D.pas[v.id]={id:"FP-"+v.id.slice(3),vid:v.id,status:"Active",plan:"Annual (demo)",bal:2000}})}
+function mgr(){return D.pref.role==="Fleet Manager"}
+function V(id){return D.veh.filter(function(v){return v.id===id})[0]}
+function ST(id){return D.sta.filter(function(v){return v.id===id})[0]}
+// ---- engine ----
+function rangeKm(v){return v.kwh*v.pct/100/v.cons}
+function calc(r,v){
+ var cum=0,avail=v.kwh*v.pct/100,legs=r.stops.map(function(s){cum+=s.km;var left=(avail-cum*v.cons)/v.kwh*100;return{n:s.n,km:s.km,kwh:s.km*v.cons,pct:left,ok:left>=10}});
+ var energy=cum*v.cons,short=Math.max(0,energy+v.kwh*.1-avail);
+ return{km:cum,kwh:energy,arr:(avail-energy)/v.kwh*100,ok:short===0,short:short,legs:legs}}
+function hav(a,b,c,d){var R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180,q=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(q))}
+function est(st){ // simulated, stable per 10-minute bucket
+ var b=Math.floor(Date.now()/6e5),h=0,s=st.id+b;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%9973;
+ var free=h%(st.n+1),wait=free?0:8+h%22,prob=84+h%15,soon=free>0||h%3>0;
+ return{free:free,wait:wait,prob:prob,soon:soon,upd:new Date(b*6e5).toISOString()}}
+function compat(v){return D.sta.filter(function(s){return s.conn===v.conn})}
+function rank(v,rad){return compat(v).map(function(s){var d=hav(v.lat,v.lng,s.lat,s.lng),e=est(s);return{s:s,d:d,e:e,score:d*1.5+e.wait+(100-e.prob)*.5}}).filter(function(x){return x.d<=rad}).sort(function(a,b){return a.score-b.score})}
+function mins(v,s,from,to){return Math.ceil((to-from)/100*v.kwh/s.kw*60)}
+function overlap(a,b,c,d){return a<d&&c<b}
+function load(sid,a,b,skip){var n=0;D.ses.forEach(function(x){if(x.sid===sid&&x.status==="Scheduled"&&overlap(+new Date(x.start),+new Date(x.start)+x.mins*6e4,a,b))n++});
+ D.res.forEach(function(x){if(x.sid===sid&&x.status==="Confirmed"&&x.id!==skip&&overlap(+new Date(x.start),+new Date(x.end),a,b))n++});return n}
+function nextFree(s,a,len){for(var t=a;t<a+864e5;t+=9e5)if(load(s.id,t,t+len)<s.n)return t;return null}
+function needs(){return D.veh.filter(function(v){return v.status!=="Offline"&&v.status!=="Charging"&&v.pct<40})}
+function urgent(vid){return D.rou.some(function(r){return r.vid===vid&&r.status==="Planned"})}
+function coord(list,stas,start,H){
+ var load={},out=[],un=[];
+ list.slice().sort(function(a,b){return(100-b.pct+(b.urg?30:0))-(100-a.pct+(a.urg?30:0))}).forEach(function(v){
+  var cs=stas.filter(function(s){return s.conn===v.conn}).sort(function(a,b){return hav(v.lat,v.lng,a.lat,a.lng)-hav(v.lat,v.lng,b.lat,b.lng)}),done=0;
+  for(var h=0;h<H&&!done;h++)for(var i=0;i<cs.length&&!done;i++){var k=cs[i].id+h;if((load[k]||0)<cs[i].n){load[k]=(load[k]||0)+1;out.push({v:v,s:cs[i],h:h});done=1}}
+  if(!done)un.push(v)});
+ return{out:out,un:un}}
+// ---- views ----
+var NAVS={"Fleet Manager":[["dash","Fleet overview"],["veh","Vehicles"],["sta","Charging stations"],["coord","Fleet coordination"],["pass","FleetPass"],["hist","History and reports"],["about","About and help"]],
+"Dispatcher":[["dispatch","Dispatch board"],["plan","Route planner"],["ses","Charging scheduler"],["disc","Station finder"],["resv","Reservations"],["hist","History"],["about","About and help"]],
+"EV Owner":[["mycar","My car"],["trip","Trip check"],["chargers","Find chargers"],["guide","Charging guide"],["log","Charging log"],["about","About and help"]]};
+var DEF={"Fleet Manager":"dash","Dispatcher":"dispatch","EV Owner":"mycar"};
+function bat(p){return '<div class="bat" aria-hidden="true"><i style="width:'+Math.max(2,p)+'%"></i></div>'}
+function stb(s){var c=s==="Available"?"b-ok":s==="Offline"?"b-bad":s==="On route"?"":"b-pink";return '<span class="badge '+c+'">'+esc(s)+'</span>'}
+function lbl(){return '<span class="sim">Simulated estimate</span>'}
+function fld(l,n,t,val,x){return '<label for="f_'+n+'">'+l+'</label><input id="f_'+n+'" name="'+n+'" type="'+(t||"text")+'" value="'+esc(val==null?"":val)+'" '+(x||"")+'>'}
+function sel(l,n,opts,val){return '<label for="f_'+n+'">'+l+'</label><select id="f_'+n+'" name="'+n+'">'+opts.map(function(o){return '<option value="'+esc(o[0])+'"'+(o[0]===val?" selected":"")+'>'+esc(o[1])+'</option>'}).join("")+'</select>'}
+function vopts(){return D.veh.map(function(v){return[v.id,v.id+" · "+v.name+" ("+v.pct+"%)"]})}
+function lock(){return mgr()?"":" disabled"}
+function guard(){return mgr()?"":'<p class="mute">Switch to Fleet manager to change this. Dispatchers can view only.</p>'}
+function dash(){
+ var c={};D.veh.forEach(function(v){c[v.status]=(c[v.status]||0)+1});
+ var low=needs(),risk=D.rou.filter(function(r){var v=V(r.vid);return r.status==="Planned"&&v&&!calc(r,v).ok}),slow=D.sta.filter(function(s){return est(s).wait>=15}),idle=D.veh.filter(function(v){return v.status==="Available"}).length;
+ var ins=[];
+ if(risk.length)ins.push(['r',risk.length+" planned route"+(risk.length>1?"s":"")+" may not finish","The assigned vehicle's range is below the route energy plus a 10% reserve. Reassign or add a charging stop."]);
+ if(low.length)ins.push(['r',low.length+" vehicle"+(low.length>1?"s":"")+" below 40% battery",low.map(function(v){return v.id+" ("+v.pct+"%)"}).join(", ")+". See Fleet coordination for a proposed charging plan."]);
+ if(slow.length)ins.push(['',slow.length+" station"+(slow.length>1?"s have":" has")+" an estimated wait over 15 minutes",slow.map(function(s){return s.name}).join(", ")+". Estimates are simulated."]);
+ var exp=D.sta.filter(function(s){return s.price>=18}).length;if(exp)ins.push(['k',exp+" stations charge ₹18 or more per kWh","Compare with cheaper compatible stations in Station finder before sending vehicles."]);
+ ins.push(['k',"Utilization: "+Math.round((c["On route"]||0)/Math.max(1,D.veh.length-(c.Offline||0))*100)+"% of in-service vehicles are on route",idle+" vehicles are available to take new routes."]);
+ return '<h1>Fleet overview</h1><p class="sub">For fleet managers: fleet health, charging spend and station usage.</p>'+
+ '<div class="grid" style="margin-bottom:14px">'+[["Total vehicles",D.veh.length],["Available",c.Available||0],["On route",c["On route"]||0],["Charging",(c.Charging||0)+(c["Charging Scheduled"]||0)],["Offline",c.Offline||0],["Need attention",low.length+risk.length],["Charging spend (demo)","₹"+D.txn.reduce(function(a,t){return a+t.amt},0)],["Reservations",D.res.filter(function(r){return r.status==="Confirmed"}).length]].map(function(x){return '<div class="card" style="margin:0"><div class="mute">'+x[0]+'</div><div class="cnt">'+x[1]+'</div></div>'}).join("")+'</div>'+
+ '<div class="card"><h2>AI fleet briefing</h2><p class="mute">Calculated from your saved fleet data. Station figures are simulated.</p>'+ins.map(function(x){return '<div class="ins '+x[0]+'"><b>'+x[1]+'</b><div class="mute">'+x[2]+'</div></div>'}).join("")+'</div>'+
+ stationUse()+'<h2>Vehicles</h2><div class="grid">'+D.veh.map(function(v){return '<div class="card" style="margin:0"><b>'+esc(v.id)+'</b> '+stb(v.status)+'<div class="mute">'+esc(v.name)+'</div>'+bat(v.pct)+'<b>'+v.pct+'%</b> battery · <b>'+Math.round(rangeKm(v))+' km</b> range'+(v.pct<25?' <span class="badge b-bad">Low battery</span>':'')+'</div>'}).join("")+'</div>'}
+function vehV(){
+ var e=S.editV,ev=e&&e!=="new"?V(e):{id:"",name:"",kwh:"",cons:"",pct:"",conn:"CCS2",status:"Available",lat:12.935,lng:77.614};
+ var form=e?'<form class="card" data-f="veh"><h2>'+(e==="new"?"Add vehicle":"Edit "+esc(ev.id))+'</h2><div class="two"><div>'+fld("Name","name","text",ev.name)+fld("Battery capacity (kWh)","kwh","number",ev.kwh,'step="any"')+fld("Consumption (kWh per km)","cons","number",ev.cons,'step="any"')+'</div><div>'+fld("Charge level (%)","pct","number",ev.pct,'step="any"')+sel("Connector","conn",[["CCS2","CCS2"],["Type 2","Type 2"]],ev.conn)+sel("Status","status",["Available","On route","Charging","Charging Scheduled","Offline"].map(function(x){return[x,x]}),ev.status)+'</div></div><div class="row"><button class="btn p">Save vehicle</button><button type="button" class="btn" data-a="cancel">Cancel</button></div></form>':"";
+ return '<h1>Vehicles</h1><p class="sub">Keep battery, consumption and status up to date so range is accurate.</p>'+guard()+'<div class="row" style="margin:0 0 12px"><button class="btn p" data-a="addVeh"'+lock()+'>Add vehicle</button></div>'+form+
+ '<div class="card tw"><table><tr><th>ID</th><th>Name</th><th>Battery</th><th>Charge</th><th>Range</th><th>Connector</th><th>Status</th><th>Actions</th></tr>'+(D.veh.length?D.veh.map(function(v){return '<tr><td>'+v.id+'</td><td>'+esc(v.name)+'</td><td>'+v.kwh+' kWh</td><td>'+v.pct+'%</td><td>'+Math.round(rangeKm(v))+' km</td><td>'+v.conn+'</td><td>'+stb(v.status)+'</td><td><button class="btn" data-a="editVeh" data-i="'+v.id+'"'+lock()+'>Edit</button> <button class="btn" data-a="delVeh" data-i="'+v.id+'"'+lock()+'>Delete</button></td></tr>'}).join(""):'<tr><td colspan="8" class="empty">No vehicles yet. Add a vehicle or load sample data.</td></tr>')+'</table></div>'}
+function staV(){
+ var e=S.editS,es=e&&e!=="new"?ST(e):{name:"",conn:"CCS2",kw:"",n:"",price:""};
+ var form=e?'<form class="card" data-f="sta"><h2>'+(e==="new"?"Add station":"Edit station")+'</h2><div class="two"><div>'+fld("Name","name","text",es.name)+sel("Connector type","conn",[["CCS2","CCS2"],["Type 2","Type 2"]],es.conn)+fld("Power (kW)","kw","number",es.kw,'step="any"')+'</div><div>'+fld("Number of connectors","n","number",es.n)+fld("Price (₹ per kWh)","price","number",es.price,'step="any"')+'</div></div><div class="row"><button class="btn p">Save station</button><button type="button" class="btn" data-a="cancel">Cancel</button></div></form>':"";
+ return '<h1>Charging stations</h1><p class="sub">Connector type, power and simulated availability.</p>'+guard()+'<div class="row" style="margin:0 0 12px"><button class="btn p" data-a="addSta"'+lock()+'>Add station</button></div>'+form+
+ '<div class="grid">'+D.sta.map(function(s){var x=est(s);return '<div class="card" style="margin:0"><b>'+esc(s.name)+'</b><div class="mute">'+s.conn+' · '+s.kw+' kW · ₹'+s.price+'/kWh</div><p style="margin:8px 0"><b>'+x.free+'</b> of '+s.n+' connectors free<br>Estimated wait: '+x.wait+' min<br>Estimated reliability: '+x.prob+'%</p>'+lbl()+'<div class="mute">Updated '+fm(x.upd)+'</div><div class="row"><button class="btn" data-a="editSta" data-i="'+s.id+'"'+lock()+'>Edit</button><button class="btn" data-a="delSta" data-i="'+s.id+'"'+lock()+'>Delete</button></div></div>'}).join("")+'</div>'}
+function sesV(){
+ var vid=S.sv||D.veh[0]&&D.veh[0].id,v=V(vid)||{},cs=v.id?compat(v):[],sid=S.ss&&ST(S.ss)&&ST(S.ss).conn===v.conn?S.ss:cs[0]&&cs[0].id,s=ST(sid),start=S.st||loc(nowH()),tg=S.tg||90;
+ var info="";if(v.id&&s){var a=+new Date(start),m=mins(v,s,v.pct,tg),kwh=(tg-v.pct)/100*v.kwh,len=m*6e4,c=tg>v.pct?load(s.id,a,a+len):0;
+  info=tg<=v.pct?'<div class="msg err" role="alert">Target must be above the current charge of '+v.pct+'%.</div>':'<p><b>'+kwh.toFixed(1)+' kWh</b> needed · about <b>'+m+' min</b> at '+s.kw+' kW · cost about ₹'+Math.round(kwh*s.price)+'</p>'+(c>=s.n?'<div class="msg err" role="alert">This station is fully booked at that time. Next free start: '+(nextFree(s,a,len)?fm(nextFree(s,a,len)):"none in 24 hours")+'.</div>':'<div class="msg ok">Slot is free ('+(s.n-c)+' of '+s.n+' connectors open).</div>')}
+ return '<h1>Charging scheduler</h1><p class="sub">Pick a vehicle, station and target so it is ready before its route.</p><div class="two"><form class="card" data-f="ses" data-live="1">'+sel("Vehicle","sv",vopts(),vid)+sel("Station (compatible only)","ss",cs.map(function(x){return[x.id,x.name+" · "+x.kw+" kW"]}),sid)+fld("Start time","st","datetime-local",start)+fld("Target charge (%)","tg","number",tg,'min="1" max="100"')+'<div class="row"><button class="btn p">Confirm session</button></div></form><div class="card" aria-live="polite"><h2>Charging estimate</h2>'+info+'</div></div>'+
+ '<div class="card tw"><h2>Scheduled sessions</h2><table><tr><th>Vehicle</th><th>Station</th><th>Start</th><th>Target</th><th>Minutes</th><th>Status</th></tr>'+D.ses.map(function(x){return '<tr><td>'+x.vid+'</td><td>'+esc((ST(x.sid)||{}).name)+'</td><td>'+fm(x.start)+'</td><td>'+x.target+'%</td><td>'+x.mins+'</td><td>'+stb(x.status)+'</td></tr>'}).join("")+'</table></div>'}
+function planV(){
+ var d=S.draft,v=V(d.vid),r={stops:d.stops},c=v&&d.stops.length?calc(r,v):null,ro;
+ if(!v)ro='<p class="mute">Choose a vehicle to check range.</p>';else if(!c)ro='<div class="empty">No stops yet. Add your stops to plan the first route.</div>';else{
+  var ch=c.ok?null:rank(v,60).filter(function(x){return true})[0];
+  ro='<p><b>'+c.km.toFixed(1)+' km</b> · <b>'+c.kwh.toFixed(1)+' kWh</b> needed<br>Available range: '+Math.round(rangeKm(v))+' km ('+(v.kwh*v.pct/100).toFixed(1)+' kWh)<br>Arrival battery: <b>'+Math.max(0,c.arr).toFixed(0)+'%</b></p>'+
+  (c.ok?'<div class="msg ok">'+esc(v.id)+' can finish this route with a 10% reserve.</div>':'<div class="msg err" role="alert">This vehicle needs about '+c.short.toFixed(1)+' kWh more to finish the route. Add a charging stop or choose another vehicle.</div>'+(ch?'<div class="ins k"><b>Suggested charging stop: '+esc(ch.s.name)+'</b><div class="mute">'+ch.d.toFixed(1)+' km away · about '+Math.ceil(c.short/ch.s.kw*60)+' min to add '+c.short.toFixed(1)+' kWh · estimated wait '+ch.e.wait+' min</div>'+lbl()+'</div>':'<div class="msg warn">No compatible station found nearby.</div>'))+
+  '<h2 style="margin-top:12px">Energy per leg</h2><div class="tw"><table><tr><th>Leg</th><th>km</th><th>kWh</th><th>Battery after</th></tr>'+c.legs.map(function(l){return '<tr><td>'+esc(l.n)+'</td><td>'+l.km+'</td><td>'+l.kwh.toFixed(2)+'</td><td>'+Math.max(0,l.pct).toFixed(0)+'% '+(l.ok?'':'<span class="badge b-bad">Needs charge</span>')+'</td></tr>'}).join("")+'</table></div>'}
+ return '<h1>Route planner</h1><p class="sub">Add stops, choose a vehicle and see if it can finish.</p><div class="two"><div class="card" data-live="2">'+fld("Route name","rname","text",d.name)+sel("Vehicle","rv",[["","Select a vehicle"]].concat(vopts()),d.vid)+
+ '<h2 style="margin-top:14px">Stops</h2>'+(d.stops.length?'<ol style="padding-left:18px">'+d.stops.map(function(s,i){return '<li>'+esc(s.n)+' · '+s.km+' km from previous <button class="btn" data-a="mv" data-i="'+i+'" data-d="-1" aria-label="Move up">↑</button> <button class="btn" data-a="mv" data-i="'+i+'" data-d="1" aria-label="Move down">↓</button> <button class="btn" data-a="rm" data-i="'+i+'">Remove</button></li>'}).join("")+'</ol>':'<p class="mute">Start with the depot: enter 0 km for the first stop.</p>')+
+ fld("Stop name","sn","text","")+fld("Distance from previous stop (km)","sk","number","",'min="0" step="any"')+'<div class="row"><button class="btn" data-a="addStop">Add stop</button><button class="btn p" data-a="saveRoute">Save route</button></div></div><div class="card" aria-live="polite"><h2>Readout</h2><div id="ro">'+ro+'</div></div></div>'}
+function discV(){
+ var vid=S.disc.vid||D.veh[0].id,v=V(vid),rk=rank(v,S.disc.rad);
+ return '<h1>Station finder</h1><p class="sub">Compatible stations near the vehicle, compared and ranked.</p><div class="card" data-live="3"><div class="two"><div>'+sel("Vehicle","dv",vopts(),vid)+'</div><div>'+fld("Search radius (km)","dr","number",S.disc.rad,'min="1"')+'</div></div></div>'+
+ (rk.length?rk.map(function(x,i){var e=x.e;return '<div class="card"><b>'+(i===0?'Recommended: ':i===1?'Backup: ':'')+esc(x.s.name)+'</b> '+(i<2?'<span class="badge b-ok">'+(i?'Backup':'Primary')+'</span>':'')+'<div class="mute">'+x.s.conn+' · '+x.s.kw+' kW · ₹'+x.s.price+'/kWh · '+x.d.toFixed(1)+' km detour</div><p style="margin:8px 0">Free connectors: <b>'+e.free+'</b> of '+x.s.n+'<br>Estimated waiting time: '+e.wait+' minutes.<br>Estimated charger reliability: '+e.prob+'%.<br>'+(e.soon?'A compatible connector may be available when your vehicle arrives.':'Connectors may be busy when your vehicle arrives.')+'</p>'+lbl()+' <span class="mute">Updated '+fm(e.upd)+'. Not a guarantee.</span></div>'}).join(""):'<div class="card empty">No compatible stations within '+S.disc.rad+' km. Try a larger radius.</div>')}
+function resV(){
+ var s0=S.rs&&ST(S.rs)?S.rs:D.sta[0].id,st=ST(s0),cn=[];for(var i=1;i<=st.n;i++)cn.push([String(i),"Connector "+i]);
+ return '<h1>Reservations</h1><p class="sub">Reserve a connector and time slot ahead of time.</p><form class="card" data-f="res" data-live="4"><div class="two"><div>'+sel("Vehicle","rsv",vopts().filter(function(o){return V(o[0]).conn===st.conn}),S.rvv)+sel("Station","rs",D.sta.map(function(s){return[s.id,s.name+" ("+s.conn+")"]}),s0)+'</div><div>'+sel("Connector","rc",cn,"1")+fld("Start time","rst","datetime-local",S.rstt||loc(nowH()))+fld("Duration (minutes)","rd","number",S.rdd||60,'min="15" step="15"')+'</div></div><div class="row"><button class="btn p">Confirm reservation</button></div></form>'+
+ '<div class="card tw"><h2>Upcoming reservations</h2><table><tr><th>Vehicle</th><th>Station</th><th>Connector</th><th>Slot</th><th>Status</th><th>Actions</th></tr>'+(D.res.length?D.res.map(function(r){var on=r.status==="Confirmed";return '<tr><td>'+r.vid+'</td><td>'+esc((ST(r.sid)||{}).name)+'</td><td>'+r.cn+'</td><td>'+fm(r.start)+' to '+fm(r.end)+'</td><td>'+stb(r.status)+'</td><td>'+(on?'<input type="datetime-local" id="rr_'+r.id+'" aria-label="New start time" value="'+loc(r.start)+'" style="width:auto"> <button class="btn" data-a="resch" data-i="'+r.id+'">Reschedule</button> <button class="btn" data-a="cxl" data-i="'+r.id+'">Cancel</button>':'')+'</td></tr>'}).join(""):'<tr><td colspan="6" class="empty">No reservations yet.</td></tr>')+'</table></div>'}
+function coordV(){
+ var list=needs().map(function(v){return Object.assign({urg:urgent(v.id)},v)}),p=coord(list,D.sta,nowH(),8),t0=+nowH();S.plan=p;
+ return '<h1>Fleet coordination</h1><p class="sub">Vehicles ranked by battery level and route urgency, assigned to stations within connector capacity.</p>'+guard()+
+ '<div class="card tw"><h2>Proposed charging plan</h2>'+(p.un.length?'<div class="msg warn" role="alert">Fleet capacity warning: '+p.un.length+' vehicle(s) cannot be placed in the next 8 hours ('+p.un.map(function(v){return v.id}).join(", ")+').</div>':'')+'<table><tr><th>Priority</th><th>Vehicle</th><th>Battery</th><th>Urgent route</th><th>Station</th><th>Slot</th></tr>'+(p.out.length?p.out.map(function(a,i){return '<tr><td>'+(i+1)+'</td><td>'+a.v.id+'</td><td>'+a.v.pct+'%</td><td>'+(a.v.urg?"Yes":"No")+'</td><td>'+esc(a.s.name)+'</td><td>'+fm(t0+a.h*36e5)+'</td></tr>'}).join(""):'<tr><td colspan="6" class="empty">No vehicles need charging right now.</td></tr>')+'</table><div class="row"><button class="btn p" data-a="approve"'+(mgr()&&p.out.length?"":" disabled")+'>Approve and assign</button><button class="btn g" data-a="sim"'+lock()+'>Simulate 1,000 vehicles</button></div></div>'+
+ (S.sim?'<div class="card" aria-live="polite"><h2>Large fleet simulation '+lbl()+'</h2><p>'+S.sim.total+' vehicles, <b>'+S.sim.need+'</b> need charging. <b>'+S.sim.ok+'</b> assigned within 24 hours across '+D.sta.length+' stations; <b>'+S.sim.un+'</b> cannot be placed.</p>'+(S.sim.un?'<div class="msg warn">Fleet capacity warning: add connectors or stagger shifts.</div>':'')+'</div>':'')}
+function passV(){
+ return '<h1>UrbanRoute FleetPass</h1><p class="sub">A FASTag-inspired pass linked to each vehicle. '+lbl()+' Balances and transactions are demo data only.</p><div class="grid">'+D.veh.map(function(v){var p=D.pas[v.id];return '<div class="card" style="margin:0"><b>'+p.id+'</b> <span class="badge b-ok">'+p.status+'</span><div class="mute">Linked to '+v.id+' · '+p.plan+'</div><div class="cnt">₹'+p.bal+'</div><div class="mute">Demo balance</div><div class="row"><button class="btn" data-a="topup" data-i="'+v.id+'"'+lock()+'>Add ₹500 demo</button></div></div>'}).join("")+'</div>'+
+ '<div class="card tw" style="margin-top:14px"><h2>Transaction history '+lbl()+'</h2><table><tr><th>ID</th><th>Pass</th><th>Station</th><th>Amount</th><th>Time</th><th>Status</th></tr>'+(D.txn.length?D.txn.slice().reverse().map(function(t){return '<tr><td>'+t.id+'</td><td>'+t.pid+'</td><td>'+esc(t.sn)+'</td><td>₹'+t.amt+'</td><td>'+fm(t.at)+'</td><td>'+stb(t.status)+'</td></tr>'}).join(""):'<tr><td colspan="6" class="empty">No transactions yet. Confirm a charging session to see one.</td></tr>')+'</table></div>'}
+function rows(){return D.rou.map(function(r){return{type:"Route",id:r.id,vehicle:r.vid,detail:r.name+" · "+r.km+" km · "+r.kwh+" kWh",when:r.at,status:r.status}}).concat(D.ses.map(function(x){return{type:"Charging",id:x.id,vehicle:x.vid,detail:((ST(x.sid)||{}).name||"")+" to "+x.target+"%",when:x.start,status:x.status}}),D.res.map(function(x){return{type:"Reservation",id:x.id,vehicle:x.vid,detail:((ST(x.sid)||{}).name||"")+" connector "+x.cn,when:x.start,status:x.status}})).filter(function(r){var q=S.q.toLowerCase();return(S.f==="All"||r.status===S.f)&&(!q||(r.vehicle+r.detail+r.id).toLowerCase().indexOf(q)>-1)})}
+function histV(){
+ var r=rows();
+ return '<h1>History</h1><p class="sub">Saved routes, charging sessions and reservations.</p><div class="card" data-live="5"><div class="two"><div>'+fld("Search by vehicle or name","q","search",S.q)+'</div><div>'+sel("Status","f",["All","Planned","Scheduled","Confirmed","Cancelled"].map(function(x){return[x,x]}),S.f)+'</div></div><div class="row"><button class="btn g" data-a="csv">Export CSV</button></div></div><div class="card tw"><table><tr><th>Type</th><th>ID</th><th>Vehicle</th><th>Details</th><th>When</th><th>Status</th><th></th></tr>'+(r.length?r.map(function(x){return '<tr><td>'+x.type+'</td><td>'+x.id+'</td><td>'+x.vehicle+'</td><td>'+esc(x.detail)+'</td><td>'+fm(x.when)+'</td><td>'+stb(x.status)+'</td><td>'+(x.type==="Route"?'<button class="btn" data-a="open" data-i="'+x.id+'">Details</button>':'')+'</td></tr>'}).join(""):'<tr><td colspan="7" class="empty">No results. <button class="btn" data-a="reset">Reset filters</button></td></tr>')+'</table></div>'}
+function routeV(){
+ var r=D.rou.filter(function(x){return x.id===S.sel})[0];if(!r)return histV();var v=V(r.vid),c=v?calc(r,v):null;
+ return '<h1>'+esc(r.name)+'</h1><p class="sub">'+r.id+' · '+(v?esc(v.id+" "+v.name):"Vehicle removed")+' · '+stb(r.status)+'</p><div class="card tw"><table><tr><th>Stop</th><th>Leg km</th><th>Leg kWh</th><th>Battery after</th></tr>'+(c?c.legs.map(function(l){return '<tr><td>'+esc(l.n)+'</td><td>'+l.km+'</td><td>'+l.kwh.toFixed(2)+'</td><td>'+Math.max(0,l.pct).toFixed(0)+'%</td></tr>'}).join(""):"")+'</table><p>Total <b>'+r.km+' km</b>, <b>'+r.kwh+' kWh</b>.'+(c?' Arrival battery <b>'+Math.max(0,c.arr).toFixed(0)+'%</b> at today’s charge.':'')+'</p><div class="row"><button class="btn" data-a="nav" data-i="hist">Back to history</button><button class="btn" data-a="delRoute" data-i="'+r.id+'">Delete route</button></div></div>'}
+function aboutV(){return '<h1>About and help</h1><div class="card"><h2>How the engine calculates</h2><p>Available energy = battery kWh × charge %. Range = available energy ÷ consumption (kWh per km). Route energy = total km × consumption. Arrival battery = (available − route energy) ÷ battery kWh. A route passes when arrival is at least 10%.</p><p>Charging energy = (target % − current %) × battery kWh. Charging time = energy ÷ station kW × 60 minutes.</p><p>Station ranking score = distance × 1.5 + waiting minutes + (100 − reliability) × 0.5. Lower is better.</p></div><div class="card"><h2>Assumptions and limits</h2><p>Consumption and charging power are constant. No traffic, weather or charge taper. Free connectors, waiting time, reliability, arrival availability and FleetPass balances are <b>simulated</b>. There is no live GPS, charger network or payment. Data is stored in this browser only. The AI briefing uses fixed rules on your saved data and is not a certified planning tool.</p><button class="btn" data-a="seed">Reload sample data</button></div>'}
+function car(){return D.own.car}
+function stationUse(){return '<div class="card tw"><h2>Charging station usage</h2><table><tr><th>Station</th><th>Connectors</th><th>Sessions</th><th>Reservations</th><th>Price</th></tr>'+D.sta.map(function(s){return '<tr><td>'+esc(s.name)+'</td><td>'+s.n+'</td><td>'+D.ses.filter(function(x){return x.sid===s.id&&x.status==="Scheduled"}).length+'</td><td>'+D.res.filter(function(x){return x.sid===s.id&&x.status==="Confirmed"}).length+'</td><td>₹'+s.price+'/kWh</td></tr>'}).join("")+'</table></div>'}
+function kbox(a){return '<div class="grid" style="margin-bottom:14px">'+a.map(function(x){return '<div class="card" style="margin:0"><div class="mute">'+x[0]+'</div><div class="cnt">'+x[1]+'</div></div>'}).join("")+'</div>'}
+function dispatchV(){
+ var ready=D.veh.filter(function(v){return v.status==="Available"}).sort(function(a,b){return rangeKm(b)-rangeKm(a)}),
+ routes=D.rou.filter(function(r){return r.status==="Planned"}),
+ soon=D.veh.filter(function(v){return v.pct<40&&v.status!=="Offline"&&v.status!=="Charging"}),
+ next=D.ses.filter(function(x){return x.status==="Scheduled"}),bad=0;
+ var rt=routes.map(function(r){var v=V(r.vid),c=v?calc(r,v):null,alt=null;
+  if(c&&!c.ok){bad++;alt=ready.filter(function(x){return x.id!==v.id&&calc(r,x).ok})[0]}
+  return '<tr><td>'+esc(r.name)+'</td><td>'+r.vid+'</td><td>'+r.km+' km</td><td>'+(c?(c.ok?'<span class="badge b-ok">Can finish</span> arrives with '+Math.max(0,c.arr).toFixed(0)+'%':'<span class="badge b-bad">Needs charge</span> short by '+c.short.toFixed(1)+' kWh'):'Vehicle removed')+'</td><td>'+(alt?'<button class="btn g" data-a="reassign" data-i="'+r.id+'" data-d="'+alt.id+'">Swap to '+alt.id+'</button>':(c&&!c.ok?'<button class="btn" data-a="nav" data-i="ses">Schedule charge</button>':''))+'</td></tr>'}).join("");
+ return '<h1>Dispatch board</h1><p class="sub">Today’s routes, which vehicle can take them, and who needs charging first.</p>'+
+ kbox([["Planned routes",routes.length],["Routes at risk",bad],["Vehicles ready",ready.length],["Charging due",soon.length]])+
+ '<div class="row" style="margin:0 0 14px"><button class="btn p" data-a="nav" data-i="plan">Plan a route</button><button class="btn" data-a="nav" data-i="ses">Schedule charging</button><button class="btn" data-a="nav" data-i="disc">Find a station</button></div>'+
+ '<div class="card tw"><h2>Routes to dispatch</h2><table><tr><th>Route</th><th>Vehicle</th><th>Distance</th><th>Range check</th><th>Action</th></tr>'+(rt||'<tr><td colspan="5" class="empty">No routes yet. Add your stops to plan the first route.</td></tr>')+'</table></div>'+
+ '<div class="two"><div class="card"><h2>Ready to assign</h2>'+(ready.length?ready.map(function(v){return '<div class="ins"><b>'+v.id+'</b> '+esc(v.name)+'<div class="mute">'+v.pct+'% · '+Math.round(rangeKm(v))+' km range · '+v.conn+'</div></div>'}).join(""):'<p class="empty">No vehicles are available.</p>')+'</div>'+
+ '<div class="card"><h2>Charge before next route</h2>'+(soon.length?soon.map(function(v){return '<div class="ins r"><b>'+v.id+'</b> '+v.pct+'% battery<div class="mute">About '+Math.round(rangeKm(v))+' km of range left.</div></div>'}).join(""):'<p class="empty">Every active vehicle is above 40%.</p>')+'</div></div>'+
+ '<div class="card tw"><h2>Upcoming charging sessions</h2><table><tr><th>Vehicle</th><th>Station</th><th>Start</th><th>Target</th></tr>'+(next.length?next.map(function(x){return '<tr><td>'+x.vid+'</td><td>'+esc((ST(x.sid)||{}).name)+'</td><td>'+fm(x.start)+'</td><td>'+x.target+'%</td></tr>'}).join(""):'<tr><td colspan="4" class="empty">Nothing scheduled.</td></tr>')+'</table></div>'}
+function mycarV(){
+ var c=car(),rk=rank(c,50),best=rk[0],tips=[],home=c.cons*c.tariff,pub=rk.length?c.cons*Math.min.apply(0,rk.map(function(x){return x.s.price})):null;
+ if(c.pct<20)tips.push(["r","Battery is low ("+c.pct+"%)","Charge soon. "+(best?"The best nearby station is "+best.s.name+", "+best.d.toFixed(1)+" km away.":"No compatible station within 50 km.")]);
+ tips.push(["","Cost per km","Home charging: about ₹"+home.toFixed(2)+" per km."+(pub!==null?" Cheapest public charger nearby: about ₹"+pub.toFixed(2)+" per km.":"")]);
+ tips.push(["k","Protect your battery","Keeping charge between 20% and 80% for daily use is gentler on most EV batteries. Save full fast charges for long trips."]);
+ return '<h1>My car</h1><p class="sub">Your battery, range and charging tips in one place.</p><div class="two"><div class="card"><h2>'+esc(c.name)+'</h2>'+bat(c.pct)+'<div class="cnt">'+c.pct+'%</div><div class="mute">Battery</div><p><b>'+Math.round(rangeKm(c))+' km</b> range · '+c.kwh+' kWh battery · '+c.conn+' connector</p><div class="row"><button class="btn p" data-a="nav" data-i="trip">Check a trip</button><button class="btn" data-a="nav" data-i="chargers">Find chargers</button></div></div>'+
+ '<div class="card"><h2>Tips for you</h2>'+tips.map(function(x){return '<div class="ins '+x[0]+'"><b>'+x[1]+'</b><div class="mute">'+x[2]+'</div></div>'}).join("")+'</div></div>'+
+ '<form class="card" data-f="own"><h2>Update my car</h2><div class="two"><div>'+fld("Car name","name","text",c.name)+fld("Battery capacity (kWh)","kwh","number",c.kwh,'step="any"')+fld("Consumption (kWh per km)","cons","number",c.cons,'step="any"')+'</div><div>'+fld("Current charge (%)","pct","number",c.pct,'step="any"')+sel("Connector","conn",[["CCS2","CCS2"],["Type 2","Type 2"]],c.conn)+fld("Home electricity price (₹ per kWh)","tariff","number",c.tariff,'step="any"')+'</div></div><div class="row"><button class="btn p">Save car</button></div></form>'}
+function tripV(){
+ var c=car(),t=S.t,km=num(t.tk)*(t.tr==="Round trip"?2:1),out;
+ if(!(km>0))out='<div class="empty">Enter the trip distance to check your range.</div>';
+ else{var need=km*c.cons,avail=c.kwh*c.pct/100,arr=(avail-need)/c.kwh*100,ok=arr>=10,short=Math.max(0,need+c.kwh*.1-avail),rk=rank(c,60)[0],want=Math.ceil((need+c.kwh*.15)/c.kwh*100),add=Math.max(0,(Math.min(100,want)-c.pct)/100*c.kwh);
+  out='<p><b>'+km.toFixed(0)+' km</b> · <b>'+need.toFixed(1)+' kWh</b> needed<br>Your range now: '+Math.round(rangeKm(c))+' km<br>Arrival battery: <b>'+Math.max(0,arr).toFixed(0)+'%</b></p>'+
+  (ok?'<div class="msg ok">You can make this trip with a 10% reserve.</div>':'<div class="msg err" role="alert">You are about '+short.toFixed(1)+' kWh short. Charge before you leave or plan a stop.</div>'+(want>100?'<div class="msg warn">This trip is longer than a full charge. Plan a charging stop on the way.</div>':'<div class="ins k"><b>Charge to about '+want+'% before you leave</b><div class="mute">At home that is about '+add.toFixed(1)+' kWh, roughly ₹'+Math.round(add*c.tariff)+'.</div></div>')+(rk?'<div class="ins"><b>Or charge at '+esc(rk.s.name)+'</b><div class="mute">'+rk.d.toFixed(1)+' km from you · '+rk.s.kw+' kW · ₹'+rk.s.price+'/kWh · estimated wait '+rk.e.wait+' min</div>'+lbl()+'</div>':''))}
+ return '<h1>Trip check</h1><p class="sub">Can your '+esc(c.name)+' make it? Check before you leave.</p><div class="two"><div class="card" data-live="6">'+fld("Destination (optional)","td","text",t.td)+fld("Distance one way (km)","tk","number",t.tk,'min="0" step="any"')+sel("Trip type","tr",[["One way","One way"],["Round trip","Round trip"]],t.tr)+'<p class="mute">Starting from your current charge of '+c.pct+'%.</p></div><div class="card" aria-live="polite"><h2>Result'+(t.td?' for '+esc(t.td):'')+'</h2>'+out+'</div></div>'}
+function chargersV(){
+ var c=car(),rk=rank(c,S.od),hid=D.sta.filter(function(s){return s.conn!==c.conn}).length;
+ return '<h1>Find chargers</h1><p class="sub">Stations that fit your '+esc(c.name)+' ('+c.conn+'). '+hid+' with other plugs are hidden.</p><div class="card" data-live="7">'+fld("Search radius (km)","or","number",S.od,'min="1"')+'</div>'+
+ (rk.length?rk.map(function(x,i){var e=x.e,kwh=.6*c.kwh;return '<div class="card"><b>'+(i===0?'Best match: ':'')+esc(x.s.name)+'</b><div class="mute">'+x.s.conn+' · '+x.s.kw+' kW · ₹'+x.s.price+'/kWh · '+x.d.toFixed(1)+' km away</div><p style="margin:8px 0">Free connectors: <b>'+e.free+'</b> of '+x.s.n+'<br>Estimated waiting time: '+e.wait+' minutes.<br>Estimated charger reliability: '+e.prob+'%.<br>Charging 20% to 80%: about '+kwh.toFixed(1)+' kWh, ₹'+Math.round(kwh*x.s.price)+', '+Math.ceil(kwh/x.s.kw*60)+' min.</p>'+lbl()+' <span class="mute">Updated '+fm(e.upd)+'. Not a guarantee.</span></div>'}).join(""):'<div class="card empty">No compatible chargers within '+S.od+' km. Try a larger radius.</div>')}
+function guideV(){
+ var c=car(),q=S.cc,b=num(q.cb)||c.kwh,f=num(q.cf),t2=num(q.ct),p=num(q.cp)||0,k=num(q.ck),res;
+ if(!(t2>f&&t2<=100&&f>=0)||!(k>0))res='<div class="msg warn">Enter a start charge below the target (0 to 100%) and a charger power above 0 kW.</div>';
+ else{var kwh=(t2-f)/100*b;res='<p><b>'+kwh.toFixed(1)+' kWh</b> · about <b>'+Math.ceil(kwh/k*60)+' min</b> · cost about <b>₹'+Math.round(kwh*p)+'</b></p><p class="mute">Constant power assumed. Real charging slows near full.</p>'}
+ function t80(kw){var m=Math.ceil(.6*c.kwh/kw*60);return m>=60?(m/60).toFixed(1)+" h":m+" min"}
+ return '<h1>Charging station guide</h1><p class="sub">Everything you need to charge confidently at a public station.</p>'+
+ '<div class="card tw"><h2>Connector types</h2><table><tr><th>Connector</th><th>Type</th><th>Used for</th></tr><tr><td>CCS2</td><td>AC and DC</td><td>The common fast-charging plug on most new EV cars in India</td></tr><tr><td>Type 2</td><td>AC</td><td>Home and public AC charging, slower</td></tr><tr><td>CHAdeMO</td><td>DC</td><td>Older fast-charging plug on some imported cars</td></tr><tr><td>Bharat AC-001 / DC-001</td><td>AC / DC</td><td>Older low-power standards, seen on some small vehicles</td></tr></table><p class="mute">Check your owner’s manual for your car’s exact plug. Your car is set to '+c.conn+'.</p></div>'+
+ '<div class="card tw"><h2>Charging speeds</h2><table><tr><th>Level</th><th>Typical power</th><th>20% to 80% on your car</th></tr><tr><td>Slow AC (home socket)</td><td>3 kW</td><td>'+t80(3)+'</td></tr><tr><td>AC wall box or public AC</td><td>7 to 22 kW</td><td>'+t80(7.4)+' at 7.4 kW</td></tr><tr><td>DC fast</td><td>30 to 60 kW</td><td>'+t80(50)+' at 50 kW</td></tr><tr><td>DC ultra-fast</td><td>120 kW and above</td><td>'+t80(120)+' at 120 kW</td></tr></table><p class="mute">Estimates use constant power. Your car may accept less than the charger offers.</p></div>'+
+ '<div class="card"><h2>How to use a public charger</h2><ol><li>Check the station has a free connector that matches your plug.</li><li>Park so the cable reaches your charging port.</li><li>Authorize with the station app, a card or a pass.</li><li>Plug in firmly and confirm charging has started on the car and the charger.</li><li>Charge to what you need, then stop the session from the app or screen.</li><li>Unplug, put the cable back and move your car so others can charge.</li></ol></div>'+
+ '<div class="fg" style="margin-bottom:14px"><div class="card"><h3>Charge 20% to 80%</h3><p>The middle of the battery charges fastest and is gentler on it. Go higher only when a trip needs it.</p></div><div class="card"><h3>Keep a buffer</h3><p>Arrive at a charger with at least 10% left in case it is busy or out of order.</p></div><div class="card"><h3>Be considerate</h3><p>Leave as soon as you are done. Do not block a charger you are not using.</p></div><div class="card"><h3>Stay safe</h3><p>Do not use damaged cables or connectors. Avoid unplugging mid-charge. Keep cables off wet ground.</p></div></div>'+
+ '<div class="two"><div class="card" data-live="8"><h2>Charging cost calculator</h2>'+fld("Start charge (%)","cf","number",q.cf,'min="0" max="100"')+fld("Target charge (%)","ct","number",q.ct,'min="1" max="100"')+fld("Battery size (kWh, blank = your car)","cb","number",q.cb,'min="0" step="any"')+fld("Price (₹ per kWh)","cp","number",q.cp,'min="0" step="any"')+fld("Charger power (kW)","ck","number",q.ck,'min="0" step="any"')+'</div><div class="card" aria-live="polite"><h2>Estimate</h2>'+res+'</div></div>'}
+function logV(){
+ var L=D.own.log,kwh=L.reduce(function(a,x){return a+x.kwh},0),cost=L.reduce(function(a,x){return a+x.cost},0),home=L.filter(function(x){return x.type==="Home"}).reduce(function(a,x){return a+x.kwh},0);
+ return '<h1>Charging log</h1><p class="sub">Track what you charge and what it costs.</p>'+kbox([["Energy charged",kwh.toFixed(0)+" kWh"],["Total spend","₹"+Math.round(cost)],["Average price","₹"+(kwh?(cost/kwh).toFixed(1):0)+"/kWh"],["Charged at home",(kwh?Math.round(home/kwh*100):0)+"%"]])+
+ '<form class="card" data-f="log"><h2>Add a charging session</h2><div class="two"><div>'+fld("Date","date","date",loc(new Date()).slice(0,10))+fld("Place","place","text","")+sel("Where","type",[["Home","Home"],["Public","Public station"]],"Home")+'</div><div>'+fld("Energy added (kWh)","kwh","number","",'min="0" step="any"')+fld("Cost (₹)","cost","number","",'min="0" step="any"')+'</div></div><div class="row"><button class="btn p">Add session</button></div></form>'+
+ '<div class="card tw"><h2>Sessions</h2><table><tr><th>Date</th><th>Place</th><th>Where</th><th>kWh</th><th>Cost</th><th></th></tr>'+(L.length?L.slice().reverse().map(function(x){return '<tr><td>'+fm(x.at).split(",")[0]+'</td><td>'+esc(x.place)+'</td><td>'+x.type+'</td><td>'+x.kwh+'</td><td>₹'+x.cost+'</td><td><button class="btn" data-a="delLog" data-i="'+x.id+'">Delete</button></td></tr>'}).join(""):'<tr><td colspan="6" class="empty">No sessions yet. Add your first charge above.</td></tr>')+'</table></div>'}
+var VIEWS={dispatch:dispatchV,mycar:mycarV,trip:tripV,chargers:chargersV,guide:guideV,log:logV,dash:dash,veh:vehV,sta:staV,ses:sesV,plan:planV,disc:discV,resv:resV,coord:coordV,pass:passV,hist:histV,about:aboutV,route:routeV};
+function render(keep){
+ document.getElementById("nav").innerHTML='<div class="brand"><span class="logo"></span>UrbanRoute Fleet</div><button class="n" data-a="home">Home page</button>'+(NAVS[D.pref.role]||NAVS["Fleet Manager"]).map(function(n){return '<button class="n" data-a="nav" data-i="'+n[0]+'"'+(S.view===n[0]?' aria-current="page"':"")+'>'+n[1]+'</button>'}).join("");
+ var m=document.getElementById("m");
+ m.innerHTML='<div class="top"><span><span class="badge b-pink">'+D.pref.role+' dashboard</span> '+(API?'<span class="badge b-ok">Server connected</span>':'<span class="badge">Saved in this browser</span>')+'</span><div class="role" role="group" aria-label="Role"><button data-a="role" data-i="Fleet Manager" aria-pressed="'+(D.pref.role==="Fleet Manager")+'">Fleet manager</button><button data-a="role" data-i="Dispatcher" aria-pressed="'+(D.pref.role==="Dispatcher")+'">Dispatcher</button><button data-a="role" data-i="EV Owner" aria-pressed="'+(D.pref.role==="EV Owner")+'">EV owner</button></div></div>'+(S.msg?'<div class="msg '+S.msg.type+'" role="status">'+esc(S.msg.t)+'</div>':"")+VIEWS[S.view]();
+ S.msg=null;document.getElementById("nav").classList.remove("open");
+ if(keep){var e=document.getElementById(keep);if(e){e.focus();try{e.setSelectionRange(e.value.length,e.value.length)}catch(x){}}}}
+function go(v){S.view=v;D.pref.last=v;sv("pref");render();window.scrollTo(0,0)}
+// ---- actions ----
+function num(x){return parseFloat(x)}
+var A={
+ nav:function(i){go(i)},role:function(i){D.pref.role=i;S.view=DEF[i];sv("pref");render();window.scrollTo(0,0);if(API)pull()},
+ cancel:function(){S.editV=S.editS=null;render()},addVeh:function(){S.editV="new";render()},addSta:function(){S.editS="new";render()},
+ editVeh:function(i){S.editV=i;render()},editSta:function(i){S.editS=i;render()},
+ delVeh:function(i){D.veh=D.veh.filter(function(v){return v.id!==i});sv("veh");msg("Vehicle deleted.");render()},
+ delSta:function(i){D.sta=D.sta.filter(function(v){return v.id!==i});sv("sta");msg("Station deleted.");render()},
+ addStop:function(){var n=document.getElementById("f_sn").value.trim(),k=num(document.getElementById("f_sk").value);
+  if(!n||isNaN(k)||k<0){msg("Enter a stop name and a distance of 0 km or more.","err");render();return}S.draft.stops.push({n:n,km:k});render()},
+ mv:function(i,d){i=+i;d=+d;var s=S.draft.stops,j=i+d;if(j<0||j>=s.length)return;var t=s[i];s[i]=s[j];s[j]=t;render()},
+ rm:function(i){S.draft.stops.splice(+i,1);render()},
+ saveRoute:function(){var d=S.draft,v=V(d.vid);if(!d.name.trim()||!v||!d.stops.length){msg("Add a route name, choose a vehicle and add at least one stop.","err");render();return}
+  var c=calc({stops:d.stops},v),ch=c.ok?null:rank(v,60)[0];
+  D.rou.push({id:"RT-"+(D.rou.length+1+Math.floor(Math.random()*90)),name:d.name.trim(),vid:v.id,stops:d.stops.slice(),km:+c.km.toFixed(1),kwh:+c.kwh.toFixed(1),stop:ch?ch.s.name:null,status:"Planned",at:new Date().toISOString()});
+  if(sv("rou")){S.draft={name:"",vid:"",stops:[]};msg("Route saved. You can find it in History.")}render()},
+ delRoute:function(i){D.rou=D.rou.filter(function(r){return r.id!==i});sv("rou");msg("Route deleted.");go("hist")},
+ open:function(i){S.sel=i;S.view="route";render()},
+ resch:function(i){var r=D.res.filter(function(x){return x.id===i})[0],t=document.getElementById("rr_"+i).value,a=+new Date(t),len=+new Date(r.end)-+new Date(r.start);
+  if(!t){msg("Choose a new start time.","err");render();return}
+  if(D.res.some(function(x){return x.id!==i&&x.sid===r.sid&&x.cn===r.cn&&x.status==="Confirmed"&&overlap(a,a+len,+new Date(x.start),+new Date(x.end))})){msg("This slot conflicts with an existing reservation. Please select another slot.","err");render();return}
+  r.start=new Date(a).toISOString();r.end=new Date(a+len).toISOString();sv("res");msg("Reservation rescheduled.");render()},
+ cxl:function(i){D.res.forEach(function(r){if(r.id===i)r.status="Cancelled"});sv("res");msg("Reservation cancelled.");render()},
+ topup:function(i){D.pas[i].bal+=500;sv("pas");msg("Added ₹500 demo balance. Simulated.");render()},
+ approve:function(){var t0=+nowH(),n=0;S.plan.out.forEach(function(a){var s=t0+a.h*36e5,m=mins(a.v,a.s,a.v.pct,90);D.ses.push({id:"CS-"+uid(""),vid:a.v.id,sid:a.s.id,start:new Date(s).toISOString(),target:90,mins:m,status:"Scheduled"});V(a.v.id).status="Charging Scheduled";n++});sv("ses");sv("veh");msg(n+" charging sessions assigned.");render()},
+ sim:function(){var vs=[],s=11;function r(){s=(s*16807)%2147483647;return s/2147483647}
+  for(var i=0;i<1000;i++)vs.push({id:"S"+i,pct:Math.round(r()*100),conn:r()<.75?"CCS2":"Type 2",lat:12.88+r()*.16,lng:77.55+r()*.2,urg:r()<.2});
+  var need=vs.filter(function(v){return v.pct<40}),p=coord(need,D.sta,0,24);S.sim={total:1000,need:need.length,ok:p.out.length,un:p.un.length};render()},
+ csv:function(){var r=rows(),t="Type,ID,Vehicle,Details,When,Status\n"+r.map(function(x){return[x.type,x.id,x.vehicle,x.detail,x.when,x.status].map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  try{var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="urbanroute-history.csv";a.click();msg("Exported "+r.length+" rows.")}catch(e){msg("Export is blocked in this view. Open the page in its own tab to download.","warn")}render()},
+ reset:function(){S.q="";S.f="All";render()},
+ enter:function(i){if(!i){var r=document.getElementById("roles");if(r)r.scrollIntoView({behavior:"smooth"});return}D.pref.role=i;S.view=DEF[i];sv("pref");S.home=false;showHome();window.scrollTo(0,0)},
+ reassign:function(i,vid){var r=D.rou.filter(function(x){return x.id===i})[0];if(r){r.vid=vid;sv("rou");msg("Route "+i+" reassigned to "+vid+".")}render()},
+ delLog:function(i){D.own.log=D.own.log.filter(function(x){return x.id!==i});sv("own");msg("Session deleted.");render()},home:function(){S.home=true;showHome();window.scrollTo(0,0)},
+ seed:function(){seed();passes();msg("Sample data reloaded.");render()}
+};
+document.addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(b&&!b.disabled&&A[b.dataset.a])A[b.dataset.a](b.dataset.i,b.dataset.d)});
+document.getElementById("mb").addEventListener("click",function(){var n=document.getElementById("nav"),o=n.classList.toggle("open");this.setAttribute("aria-expanded",o)});
+document.addEventListener("submit",function(e){e.preventDefault();var f=e.target,t=f.dataset.f,g=new FormData(f),o={};g.forEach(function(v,k){o[k]=v});
+ if(t==="veh"){var kwh=num(o.kwh),cons=num(o.cons),pct=num(o.pct);
+  if(!o.name.trim()||!(kwh>0)||!(cons>0)||!(pct>=0&&pct<=100)){msg("Check the vehicle: name is required, battery and consumption must be above 0, and charge must be 0 to 100%.","err");render();return}
+  if(S.editV==="new"){var id="UR-"+(100+D.veh.length+1+Math.floor(Math.random()*50));D.veh.push({id:id,name:o.name.trim(),kwh:kwh,cons:cons,pct:pct,conn:o.conn,status:o.status,lat:12.935,lng:77.614});passes()}
+  else{var v=V(S.editV);v.name=o.name.trim();v.kwh=kwh;v.cons=cons;v.pct=pct;v.conn=o.conn;v.status=o.status}
+  sv("veh");sv("pas");S.editV=null;msg("Vehicle saved.");render()}
+ if(t==="sta"){var kw=num(o.kw),n=parseInt(o.n),pr=num(o.price);
+  if(!o.name.trim()||!(kw>0)||!(n>=1)||!(pr>=0)){msg("Station power must be greater than 0 kW, with at least 1 connector and a price of 0 or more.","err");render();return}
+  if(S.editS==="new")D.sta.push({id:"ST-"+(D.sta.length+1+Math.floor(Math.random()*50)),name:o.name.trim(),conn:o.conn,kw:kw,n:n,price:pr,lat:12.95,lng:77.62});
+  else{var s=ST(S.editS);s.name=o.name.trim();s.conn=o.conn;s.kw=kw;s.n=n;s.price=pr}
+  sv("sta");S.editS=null;msg("Station saved.");render()}
+ if(t==="ses"){var v2=V(o.sv),s2=ST(o.ss),tg=num(o.st?o.tg:0),a=+new Date(o.st);
+  if(!v2||!s2||!o.st||!(tg>v2.pct&&tg<=100)){msg("Choose a vehicle, a compatible station, a start time and a target above the current charge.","err");render();return}
+  var m=mins(v2,s2,v2.pct,tg);if(load(s2.id,a,a+m*6e4)>=s2.n){msg("This charger is already booked. Next free start: "+(nextFree(s2,a,m*6e4)?fm(nextFree(s2,a,m*6e4)):"none in 24 hours")+".","err");render();return}
+  D.ses.push({id:"CS-"+uid(""),vid:v2.id,sid:s2.id,start:new Date(a).toISOString(),target:tg,mins:m,status:"Scheduled"});v2.status="Charging Scheduled";
+  var kw2=(tg-v2.pct)/100*v2.kwh,amt=Math.round(kw2*s2.price),p=D.pas[v2.id];p.bal=Math.max(0,p.bal-amt);D.txn.push({id:"TX-"+uid(""),pid:p.id,sn:s2.name,amt:amt,at:new Date().toISOString(),status:"Simulated"});
+  sv("ses");sv("veh");sv("pas");sv("txn");msg("Charging session scheduled. Status: Charging Scheduled.");render()}
+ if(t==="res"){var vr=V(o.rsv),sr=ST(o.rs),a3=+new Date(o.rst),d3=num(o.rd);
+  if(!vr||!sr||!o.rst||!(d3>=15)){msg("Choose a vehicle, a start time and at least 15 minutes.","err");render();return}
+  if(D.res.some(function(x){return x.sid===sr.id&&x.cn===o.rc&&x.status==="Confirmed"&&overlap(a3,a3+d3*6e4,+new Date(x.start),+new Date(x.end))})){msg("This charging slot conflicts with an existing reservation. Please select another slot.","err");render();return}
+  D.res.push({id:"RS-"+uid(""),vid:vr.id,sid:sr.id,cn:o.rc,start:new Date(a3).toISOString(),end:new Date(a3+d3*6e4).toISOString(),status:"Confirmed"});sv("res");msg("Reservation confirmed.");render()}
+ if(t==="own"){var k1=num(o.kwh),c1=num(o.cons),p1=num(o.pct),t1=num(o.tariff);
+  if(!o.name.trim()||!(k1>0)||!(c1>0)||!(p1>=0&&p1<=100)||!(t1>=0)){msg("Check your car: battery and consumption must be above 0, and charge must be 0 to 100%.","err");render();return}
+  Object.assign(D.own.car,{name:o.name.trim(),kwh:k1,cons:c1,pct:p1,conn:o.conn,tariff:t1});sv("own");msg("Car details saved.");render()}
+ if(t==="log"){var k2=num(o.kwh),c2=num(o.cost);
+  if(!o.place.trim()||!(k2>0)||!(c2>=0)||!o.date){msg("Enter a date, a place, the energy in kWh (above 0) and the cost.","err");render();return}
+  D.own.log.push({id:"L"+uid(""),at:new Date(o.date).toISOString(),place:o.place.trim(),kwh:k2,cost:c2,type:o.type});sv("own");msg("Charging session added.");render()}
+});
+document.addEventListener("input",function(e){var t=e.target,id=t.id;if(!id||id.indexOf("f_")!==0)return;var n=t.name,live=t.closest("[data-live]");if(!live)return;
+ var k=live.dataset.live;
+ if(k==="1"){var m={sv:"sv",ss:"ss",st:"st",tg:"tg"};S[m[n]]=t.value;if(n==="sv")S.ss=null;render(id)}
+ else if(k==="2"){if(n==="rname")S.draft.name=t.value;if(n==="rv"){S.draft.vid=t.value;render(id)}}
+ else if(k==="3"){if(n==="dv")S.disc.vid=t.value;if(n==="dr")S.disc.rad=Math.max(1,num(t.value)||1);render(id)}
+ else if(k==="4"){if(n==="rs"){S.rs=t.value}if(n==="rsv")S.rvv=t.value;if(n==="rst")S.rstt=t.value;if(n==="rd")S.rdd=t.value;if(n==="rs")render(id)}
+ else if(k==="5"){S[n]=t.value;render(id)}
+ else if(k==="6"){S.t[n]=t.value;render(id)}
+ else if(k==="7"){S.od=Math.max(1,num(t.value)||1);render(id)}
+ else if(k==="8"){S.cc[n]=t.value;render(id)}});
+function homeHTML(){
+ var F=[["Route planning with range check","Add stops, pick a vehicle and see the energy needed and the battery left on arrival. If it falls short, you get a charging stop suggestion."],["Smart charging stations","Compare compatible stations by free connectors, waiting time and reliability, with a primary and a backup pick."],["Charging reservations","Reserve a connector and time slot. Overlaps are blocked, and you can cancel or reschedule."],["Fleet coordination","Vehicles are ranked by battery and route urgency, then assigned to stations without exceeding connector capacity."],["AI fleet briefing","A daily summary of vehicles at risk, slow stations and utilization, calculated from your own fleet data."],["FleetPass","A FASTag-inspired pass linked to each vehicle for simpler charging authorization. Demo only."]];
+ var car='<svg viewBox="0 0 640 250" role="img" aria-label="Illustration of a luxury electric car"><defs><linearGradient id="cb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9506f"/><stop offset=".5" stop-color="#a8142f"/><stop offset="1" stop-color="#4a0a18"/></linearGradient><linearGradient id="cg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f5c542" stop-opacity="0"/><stop offset=".5" stop-color="#f5c542"/><stop offset="1" stop-color="#f5c542" stop-opacity="0"/></linearGradient></defs><ellipse cx="325" cy="232" rx="290" ry="10" fill="#000" opacity=".35"/><path d="M36 190 C36 166 66 156 118 148 L205 104 C232 88 272 80 332 80 C402 80 452 94 492 122 L560 142 C602 150 612 164 610 186 L610 204 L36 204 Z" fill="url(#cb)"/><path d="M222 122 L242 104 C264 94 302 90 338 90 C394 90 430 104 456 124 Z" fill="#1a0a10"/><path d="M232 118 L248 106 C268 98 300 95 330 95" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><path d="M338 92 L340 124" stroke="#1a0a10" stroke-width="3"/><path d="M70 168 L580 164" stroke="url(#cg)" stroke-width="3"/><path d="M572 150 L606 158 L602 165 L566 158Z" fill="#f5c542"/><rect x="36" y="166" width="16" height="5" rx="2" fill="#ff3b5c"/><circle cx="150" cy="204" r="44" fill="#1c0d12"/><circle cx="500" cy="204" r="44" fill="#1c0d12"/><g id="w"><circle cx="150" cy="204" r="36" fill="#0e0508"/><circle cx="150" cy="204" r="25" fill="none" stroke="#f5c542" stroke-width="4"/><path d="M150 180v48M126 204h48M133 187l34 34M167 187l-34 34" stroke="#f5c542" stroke-width="2"/></g><use href="#w" x="350"/></svg>';
+ return '<header class="hh"><div class="brand" style="padding:0"><span class="logo"></span>UrbanRoute Fleet</div><nav aria-label="Page sections"><a href="#about">About</a><a href="#features">Features</a><a href="#how">How it works</a><a href="#roles">Dashboards</a></nav><button class="btn p" data-a="enter">Enter dashboard</button></header>'+
+ '<section class="hero"><div class="wrap"><div><h1>Plan every route. Charge every vehicle on time.</h1><p>UrbanRoute Fleet is the control room for electric fleets. See which vehicles are ready, plan routes with charging built in, and keep every delivery on schedule.</p><button class="cta" data-a="enter">Enter dashboard</button><a class="cta o" href="#features">See key features</a></div><div>'+car+'</div></div></section>'+
+ '<section class="sec" id="about"><div class="wrap"><h2>What is UrbanRoute Fleet?</h2><p class="lead">Fleet operators often track battery levels, chargers and routes in separate spreadsheets and apps. UrbanRoute Fleet puts them on one screen, so you can decide which vehicle takes a route and where it should charge.</p><div class="fg"><div class="card"><h3>One place</h3><p>Vehicles, stations, routes and charging sessions together.</p></div><div class="card"><h3>Clear answers</h3><p>Can this vehicle finish the route? If not, what should it do?</p></div><div class="card"><h3>Works on a phone</h3><p>Re-plan during a shift from a laptop or a phone.</p></div></div></div></section>'+
+ '<section class="sec alt" id="features"><div class="wrap"><h2>Key features</h2><p class="lead">Everything an EV fleet needs to plan, charge and review.</p><div class="fg">'+F.map(function(f){return '<div class="card"><h3>'+f[0]+'</h3><p>'+f[1]+'</p></div>'}).join("")+'</div></div></section>'+
+ '<section class="sec" id="how"><div class="wrap"><h2>How it works</h2><p class="lead">From setup to a saved plan in a few steps.</p><div class="steps"><div class="card" style="margin:0"><b>1</b><h3 style="margin:0 0 6px">Add your fleet</h3><p class="mute">Enter vehicles with battery size and consumption, and your charging stations.</p></div><div class="card" style="margin:0"><b>2</b><h3 style="margin:0 0 6px">Plan the route</h3><p class="mute">Add stops. The planner checks range and suggests a charging stop if needed.</p></div><div class="card" style="margin:0"><b>3</b><h3 style="margin:0 0 6px">Charge and review</h3><p class="mute">Schedule or reserve charging, then review everything in History.</p></div></div></div></section>'+
+ '<section class="sec alt" id="roles"><div class="wrap"><h2>Choose your dashboard</h2><p class="lead">Each role gets its own workspace, built for the job.</p><div class="fg"><div class="card"><h3>Fleet manager</h3><p>Fleet health, vehicle and station management, charging coordination, FleetPass and reports.</p><div class="row"><button class="btn p" data-a="enter" data-i="Fleet Manager">Open manager dashboard</button></div></div><div class="card"><h3>Dispatcher</h3><p>A live dispatch board, route planning with range checks, charging scheduling and reservations.</p><div class="row"><button class="btn p" data-a="enter" data-i="Dispatcher">Open dispatcher dashboard</button></div></div><div class="card"><h3>EV owner</h3><p>Your own car: battery and range, trip checks, nearby chargers, a charging guide and a cost log.</p><div class="row"><button class="btn p" data-a="enter" data-i="EV Owner">Open owner dashboard</button></div></div></div></div></section>'+
+ '<section class="sec end"><div class="wrap"><h2>Ready to see your fleet?</h2><p class="lead">Open the dashboard. Sample data is already loaded.</p><button class="cta" data-a="enter">Enter dashboard</button></div></section>'+
+ '<footer class="foot">UrbanRoute Fleet is a demo. Range and charging use simplified models, and station estimates and FleetPass balances are simulated.</footer>'}
+function showHome(){document.getElementById("home").innerHTML=S.home?homeHTML():"";document.getElementById("home").hidden=!S.home;document.getElementById("app").hidden=S.home;if(!S.home)render()}
+init();S.view=DEF[D.pref.role]||"dash";S.home=true;showHome();connect();
+})();
+</script>
+</body>
+</html>
